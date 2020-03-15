@@ -7,7 +7,7 @@ class Genre(Resource):
     parser.add_argument('name', required=True ,help="This field must be filled out!")
     
     def get(self, name):
-        genre = GenreModel.find_by_name()
+        genre = GenreModel.find_by_name(name)
         return genre.json() if genre else {'msg': 'Genre Not Found!!'}, 404
 
     def post(self, name):

@@ -30,7 +30,6 @@ class UserModel(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
-            'password': self.password,
             'role': self.role 
         }
 
@@ -52,16 +51,21 @@ class UserModel(db.Model):
         # same: "SELECT * FROM users WHERE id=_id"
         return cls.query.filter_by(id=_id).first()
 
+    @classmethod
+    def update(cls, _id, update_user):
+        user = cls.find_by_id(_id)
+        user.username = update_user['username']
+        user.email = update_user['email']
+
+    @classmethod
+    def change_password(cls, _id):
+        pass
+
     # !!! Uesr Register and Add The User's data to Database
     def register(self):
-        print("User Registering.....")
         db.session.add(self)
         db.session.commit()
 
-    # !!! Users will key in their username or email, together with the password
-    # !!! Check the user type whether the username or email, then autheticate with password
-    def login(self, data):
-        if UserModel.find_by_email(data['username_email']):
-            return self.query.filter_by(email=data['username_email']).filter_by(password=data['password']).first()
-        elif UserModel.find_by_username(data['username_email']):
-            return self.query.filter_by(username=data['username_email']).filter_by(password=data['password']).first()
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
