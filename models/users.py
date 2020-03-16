@@ -56,6 +56,7 @@ class UserModel(db.Model):
         user = cls.find_by_id(_id)
         user.username = update_user['username']
         user.email = update_user['email']
+        db.session.commit()
 
     @classmethod
     def change_password(cls, _id):

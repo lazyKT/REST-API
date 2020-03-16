@@ -24,7 +24,7 @@ class SongModel(db.Model):
 
     @classmethod
     def find_by_id(cls, _id_):
-        print("Searching for a song with ID : " + str(_id_))
+        ##print("Searching for a song with ID : " + str(_id_))
         return cls.query.filter_by(id=_id_).first() # same: SELECT * FROM songs WHERE id = _id_ LIMIT 1
 
     # !!! the insert and update method is just to 

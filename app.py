@@ -1,20 +1,24 @@
 from flask_restful import Api
-from flask import Flask
+from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 
 from models.users import UserModel
-from resources.users import UserRegister, User, UserLogin
+from resources.users import UserRegister, User, UserLogin, TokenRefresh, UserLogout, UserList
 from resources.songs import Song, SongList
 from resources.genres import Genre, GenreList
+from blacklist import BLACKLIST
 from db import db
 
 
 app = Flask(__name__)
-api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'  # !!! Link to database location
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 app.config['PROPAGATE_EXCEPTIONS'] = True  # !!! Allow JWT to raise errors to Flask
 app.config['JWT_SECRET_KEY'] = "meow"
+app.config['JWT_BLACKLIST_ENABLED'] = True
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh'] # !!! BlackList checks on both access and refresh token
+api = Api(app)
+
 
 # !!! Before the first request, as in very first start of the app, Create the REQUIRED DATABASE TABLES
 @app.before_first_request
@@ -27,17 +31,66 @@ jwt = JWTManager(app)
 @jwt.user_claims_loader
 def add_claims_to_jwt(identity):  # !!! identity comes from access_token
     user = UserModel.find_by_id(identity)
-    if user.role == "admin":
+    
+    if user and user.role == "admin":
         return {'is_admin': True}
+    
     return {'is_admin': False}
+
+
+# !!! User inside the black list cannot access specific pages
+@jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    return decrypted_token['jti'] in BLACKLIST
+
+
+"""Error Handling Upon Token Operations"""
+@jwt.expired_token_loader   # !!! Feed Back to users upon expired token
+def expired_token_callback():
+    return jsonify({
+        'msg': "The Token had expired!",
+        'error': "token_expired"
+    }), 401
+
+
+@jwt.invalid_token_loader  # !!! Feed Back to users upon invalid token
+def invalid_token_callback(error):
+    return jsonify({
+        'msg': str(error)
+        }), 401
+
+
+@jwt.unauthorized_loader  # !!! Request without JWT Tokens
+def missing_token_callback(error):
+    return jsonify({
+        'msg': "Missing Valid Token!!",
+        'error': "missing_token"
+    }), 401
+
+@jwt.needs_fresh_token_loader  # !!! Require JWT Tokens
+def token_not_fresh_callback():
+    return jsonify({
+        'msg': "Token needs to be refreshed",
+        'error': "fresh_token_required"
+    }), 401
+
+@jwt.revoked_token_loader  # !!! Token Revoking/ Logout
+def revoked_token():
+    return jsonify({
+        'msg': "Token has been revoked",
+        'error': "revoked_token"
+    }), 401
 
 api.add_resource(Song, '/songs/<int:_id_>')
 api.add_resource(SongList, '/songs')
-api.add_resource(UserRegister, '/register')
 api.add_resource(Genre, '/genre/<string:name>')
 api.add_resource(GenreList, '/genres')
+api.add_resource(UserRegister, '/register')
 api.add_resource(User, '/user/<int:user_id>')
 api.add_resource(UserLogin, '/login')
+api.add_resource(TokenRefresh, '/refresh')
+api.add_resource(UserLogout, '/logout')
+api.add_resource(UserList, '/users')
 
 # Main Program Here __main__
 if __name__ == '__main__':

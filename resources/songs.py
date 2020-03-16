@@ -1,5 +1,11 @@
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import jwt_required, get_jwt_claims, jwt_optional, get_jwt_identity
+from flask_jwt_extended import (
+    jwt_required, 
+    get_jwt_claims, 
+    jwt_optional, 
+    get_jwt_identity, 
+    fresh_jwt_required
+)
 import json
 from models.songs import SongModel
 
@@ -67,6 +73,7 @@ class SongList(Resource):
             'msg' : "Log in for more information!!"
         }, 200
 
+    @fresh_jwt_required   # !!! Token must be fresh in order to post a song
     def post(self):
         request_data = Song.parser.parse_args()
         new_song = SongModel(**request_data)
