@@ -10,7 +10,6 @@ from flask_jwt_extended import (
 )
 from flask_restful import Resource, reqparse
 from models.users import UserModel
-from blacklist import BLACKLIST
 from __wrappers__ import is_admin
 
 class UserRegister(Resource):
@@ -110,7 +109,7 @@ class UserLogout(Resource):
     @jwt_required
     def post(self):
         jti = get_raw_jwt()['jti'] # !!! jti = JWT ID
-        BLACKLIST.add(jti)
+        UserModel.BLACKLIST.add(jti) # Add the user_id to be revoked for logout
         return {'msg': "Successfully Logged Out!!"}, 200
 
 

@@ -6,7 +6,6 @@ from models.users import UserModel
 from resources.users import UserRegister, User, UserLogin, TokenRefresh, UserLogout, UserList
 from resources.songs import Song, SongList
 from resources.genres import Genre, GenreList
-from blacklist import BLACKLIST
 from db import db
 
 
@@ -41,7 +40,7 @@ def add_claims_to_jwt(identity):  # !!! identity comes from access_token
 # !!! User inside the black list cannot access specific pages
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
-    return decrypted_token['jti'] in BLACKLIST
+    return decrypted_token['jti'] in UserModel.BLACKLIST
 
 
 """Error Handling Upon Token Operations"""

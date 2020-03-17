@@ -11,6 +11,8 @@ from db import db
 
 class UserModel(db.Model):
 
+    BLACKLIST = set() # For revoking the Jwt Token and Log out the user
+
     # !!! Defining database table for user model  #SQLAlchemy
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)

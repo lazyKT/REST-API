@@ -4,13 +4,6 @@ from flask_jwt_extended import jwt_required, get_jwt_claims
 from __wrappers__ import is_admin
 
 
-def admin_privillage_required(f):
-    @wraps(f)
-    def checking(*args, **kwargs):
-        return f(*args, **kwargs) if get_jwt_claims()["is_admin"] else {'msg': "Unauthorized Access!!"}, 401
-    return checking
-
-
 class Genre(Resource):
 
     parser = reqparse.RequestParser()
