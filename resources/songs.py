@@ -8,10 +8,11 @@ from flask_jwt_extended import (
 )
 import json
 from models.songs import SongModel
+from models.genre import GenreModel
+from __wrappers__ import is_admin
 
 
 class Song(Resource):
-
     # initiate reqparse which is similar to Patch
     # request parsing, validate the payload
     parser = reqparse.RequestParser()
@@ -26,7 +27,9 @@ class Song(Resource):
             return song.json()
         return {'msg': 'Song Not Exists'}
 
+
     @jwt_required
+    @is_admin
     def delete(self,_id_):
         claims = get_jwt_claims()
         if not claims['is_admin']:
@@ -38,6 +41,9 @@ class Song(Resource):
             #return {'msg': 'Unsuccessful Operation!'}, 400
         return {'msg': "Song Not Exists!"}, 400
 
+
+    @jwt_required
+    @is_admin
     def put(self,_id_):
         request_data = Song.parser.parse_args()
         updated_song = SongModel.find_by_id(_id_)
@@ -73,12 +79,16 @@ class SongList(Resource):
             'msg' : "Log in for more information!!"
         }, 200
 
+
     @fresh_jwt_required   # !!! Token must be fresh in order to post a song
     def post(self):
-        request_data = Song.parser.parse_args()
-        new_song = SongModel(**request_data)
-        try:
-            new_song.save_to_db()
-        except:
-            return {'msg': 'Error occurs during the operation!'}, 500
-        return new_song.json()
+        data = Song.parser.parse_args()
+        genre_exists = GenreModel.find_by_id(data['genre_id'])
+        if genre_exists:
+            new_song = SongModel(**data)
+            try:
+                new_song.save_to_db()
+                return new_song.json(), 201
+            except:
+                return {'msg': 'Error occurs during the operation!'}, 500
+        return {'msg': "Genre must be existed before song is created"}, 400

@@ -27,6 +27,11 @@ class GenreModel(db.Model):
         # same: "SELECT * FROM users WHERE name=name"
         return cls.query.filter_by(name=name).first()
 
+    @classmethod
+    def find_by_id(cls,genre_id):
+        return cls.query.filter_by(id=genre_id).first()
+
+
     def add_genre(self):
         db.session.add(self)
         db.session.commit()

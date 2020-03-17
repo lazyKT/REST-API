@@ -11,6 +11,7 @@ from flask_jwt_extended import (
 from flask_restful import Resource, reqparse
 from models.users import UserModel
 from blacklist import BLACKLIST
+from __wrappers__ import is_admin
 
 class UserRegister(Resource):
     
@@ -38,6 +39,8 @@ class UserRegister(Resource):
             return {'msg': 'Error Occurs During the Operation!'}, 500
         return new_user.json(), 201
 
+    @jwt_required
+    @is_admin
     def get(self):
         return {'users' : [user.json() for user in UserModel.query.all()]}
 
@@ -60,11 +63,9 @@ class User(Resource):
         return {'msg': "User Not Found!"}, 404
 
     @jwt_required
+    @is_admin
     def delete(self, user_id):
         user = UserModel.find_by_id(user_id)
-        claims = get_jwt_claims()
-        if not claims['is_admin']:
-            return {'msg': "Admin Previllage Required!"}, 401
         if user:
             UserModel.delete(user)
             return {'msg': "User deleted successfully!!!"}, 200
@@ -130,7 +131,6 @@ class TokenRefresh(Resource):
 class UserList(Resource):
 
     @jwt_required
+    @is_admin
     def get(self):
-        if not get_jwt_claims()['is_admin']:
-            return {'msg': "Admin Previllages Required!!!"}, 401
         return {'users': [user.json() for user in UserModel.query.all()]}, 200
