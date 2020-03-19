@@ -1,5 +1,5 @@
 from flask_restful import Api
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_jwt_extended import JWTManager
 
 from models.users import UserModel
@@ -23,6 +23,15 @@ api = Api(app)
 @app.before_first_request
 def create_database_tables():
     db.create_all()
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 jwt = JWTManager(app)
 
