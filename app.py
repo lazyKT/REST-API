@@ -1,6 +1,7 @@
 from flask_restful import Api
 from flask import Flask, jsonify, render_template
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 from models.users import UserModel
 from resources.users import UserRegister, User, UserLogin, TokenRefresh, UserLogout, UserList
@@ -17,7 +18,7 @@ app.config['JWT_SECRET_KEY'] = "meow"
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh'] # !!! BlackList checks on both access and refresh token
 api = Api(app)
-
+CORS(app)
 
 # !!! Before the first request, as in very first start of the app, Create the REQUIRED DATABASE TABLES
 @app.before_first_request

@@ -20,7 +20,7 @@ class Song(Resource):
     parser.add_argument('artist',required=True,help="This field cannot be empty!")
     parser.add_argument('genre_id',type=int,required=True,help="Song must have genre!")
 
-    @jwt_required
+    #@jwt_required
     def get(self, _id_):
         song = SongModel.find_by_id(_id_)
         if song:
@@ -66,19 +66,11 @@ class Song(Resource):
 
 class SongList(Resource):
     
-    @jwt_optional
+    #@jwt_optional
     def get(self):
         user_id = get_jwt_identity()   # !!! get user_id from JWT Token
         songs = [song.json() for song in SongModel.query.all()]
-        if user_id: # !!! If user is logged in, show him full data
-            # same: {'songs': list(map(lambda x: x.json, SongModel.query.all()))}
-            return{'songs': songs}, 200  # same: SELECT * FROM songs
-        # !!! If user is not logged in, just give them a few
-        return {
-            'songs' : [song["title"] for song in songs],
-            'msg' : "Log in for more information!!"
-        }, 200
-
+        return songs
 
     @fresh_jwt_required   # !!! Token must be fresh in order to post a song
     def post(self):

@@ -1,4 +1,8 @@
+from datetime import datetime
 from db import db
+import hashlib
+import os
+import uuid
 
 
 # !!! This is a helper class to simplify the db operations
@@ -16,23 +20,35 @@ class UserModel(db.Model):
     # !!! Defining database table for user model  #SQLAlchemy
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(80))
     username = db.Column(db.String(80))
     email = db.Column(db.String(80))
     password = db.Column(db.String(80))
+    profile_pic = db.Column(db.String(80))
     role = db.Column(db.String(80))
+    timeStamp = db.Column(db.String(80))
 
-    def __init__(self, username, email, password, role):
+    def __init__(self, username, email, password, role, profile_pic):
+        current_time = datetime.now()
+
+        # User Table Columns
         self.username = username
         self.email = email
         self.password = password
+        self.user_id = str(uuid.uuid1())
         self.role = role
+        self.profile_pic = profile_pic
+        self.timeStamp = datetime.strftime(current_time, '%m/%d/%y %H:%M:%S')
     
     def json(self):
         return {
             'id': self.id,
+            'unique_id' : self.user_id,
             'username': self.username,
             'email': self.email,
-            'role': self.role 
+            'role': self.role,
+            'profile_pic' : self.profile_pic,
+            'created_on' : self.timeStamp
         }
 
     #??? What is a @classmethod? Class Method is used to modified the class
@@ -72,3 +88,27 @@ class UserModel(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+
+
+class Hash_Password:
+
+    def __init__(self, pwd):
+        self.salt = os.urandom(32)
+        self.pwd = pwd
+
+    
+    def hash_pwd (self):
+        key = hashlib.pbkdf2_hmac('sha256', self.pwd.encode('utf-8'), self.salt, 1000)
+        store_pwd = self.salt + key
+
+        return store_pwd
+
+    @classmethod
+    def check_pwd(cls, pwd, store_pwd):
+        salt_from_storage = store_pwd[:32]
+        key_from_storage = store_pwd[32:]
+        print("Checking password____")
+        key  = hashlib.pbkdf2_hmac('sha256', pwd.encode('utf-8'), salt_from_storage, 1000)
+
+        return True if key == key_from_storage else False

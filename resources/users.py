@@ -9,8 +9,9 @@ from flask_jwt_extended import (
     get_jwt_claims
 )
 from flask_restful import Resource, reqparse
-from models.users import UserModel
+from models.users import UserModel, Hash_Password
 from __wrappers__ import is_admin
+import os
 
 class UserRegister(Resource):
     
@@ -20,23 +21,32 @@ class UserRegister(Resource):
     parser.add_argument('email', type=str, required=False, help="This field cannot be empty!")
     parser.add_argument('password', type=str, required=True, help="This field cannot be empty!")
     parser.add_argument('role', type=str, required=False)
+    parser.add_argument('profile_pic', type=str, required=False)
 
 
     def post(self):
         # !!! Fetch data from request parser aka reqparse
         data =  UserRegister.parser.parse_args()
+    
         if UserModel.find_by_email(data['email']):
             return {'msg' : "This email already has registered account."}, 400
+        
         if UserModel.find_by_username(data['username']):
             return {'msg' : "Username '{}' already exists!".format(data['username'])}, 400
+
         # !!! Add user to database
         user_role = "user" if data['role'] == '' else "admin"
-        new_user = UserModel(data['username'], data['email'], data['password'], user_role)
+        # salt = os.urandom(32)
+        pwd = Hash_Password(data['password'])
+        password = pwd.hash_pwd()
+
+        new_user = UserModel(data['username'], data['email'], password, user_role, data['profile_pic'])
         try:
             new_user.register()
         except:
             return {'msg': 'Error Occurs During the Operation!'}, 500
         return new_user.json(), 201
+
 
     @jwt_required
     @is_admin
@@ -70,16 +80,24 @@ class User(Resource):
             return {'msg': "User deleted successfully!!!"}, 200
         return {'msg': "User Not Found!"}, 404
 
+
     @jwt_required
+    @is_admin
     def put(self, user_id):
         user = UserModel.find_by_id(user_id)
         current_user = get_jwt_identity()
-        if user_id != current_user:
-                return {'msg': "Not Accessible Content!!!"}, 401
-        if user:
-            #print("Before Update_______")
+
+        if get_jwt_claims()['is_admin']: # Is admin. the editing is allowed.
             UserModel.update(user_id, self.parser.parse_args())
             return {'msg': "Successfully Updated!!!"}, 200
+
+        if  user_id != current_user: # Strictly prevent users to access others' data
+                return {'msg': "Not Accessible Content!!!"}, 401
+
+        if user: # Users are only allowed to edit their ownself data
+            UserModel.update(user_id, self.parser.parse_args())
+            return {'msg': "Successfully Updated!!!"}, 200
+
         return {'msg': "User Not Found!"}, 404
 
 
@@ -92,16 +110,23 @@ class UserLogin(Resource):
     def post(self):
         data = self.parser.parse_args()
         user = UserModel.find_by_username(data["username"])
+
         # !!! below is the same with the authentication used in JWT(app,authentication,identity)
-        if user and safe_str_cmp(user.password, data["password"]):
+        if user and Hash_Password.check_pwd(data["password"], user.password):
             # !!! identity= is the same with the identity used in JWT(app,authentication,identity)
             access_token = create_access_token(identity=user.id, fresh=True)  # !!! Create Token for authentication
             refresh_token = create_refresh_token(user.id) # !!! Refreshing token to extend authenticated period
             return {
+                'id': user.id,
                 'access_token': access_token,
-                'refresh_token': refresh_token
+                'refresh_token': refresh_token,
+                'role': user.role,
+                'username': user.username,
+                'email': user.email
             }, 200
+
         return {'msg': "Invalid Credentials!!!"}, 401
+
 
 
 class UserLogout(Resource):

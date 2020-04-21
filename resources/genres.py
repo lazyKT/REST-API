@@ -12,7 +12,9 @@ class Genre(Resource):
     @jwt_required
     def get(self, name):
         genre = GenreModel.find_by_name(name)
-        return genre.json() if genre else {'msg': 'Genre Not Found!!'}, 404
+        if genre:
+            return genre.json(), 200
+        return {'msg': 'Genre Not Found!!'}
 
     @jwt_required
     @is_admin
@@ -41,7 +43,7 @@ class GenreList(Resource):
     @jwt_required
     def get(self):
         genre_list = [genre.json() for genre in GenreModel.query.all()]
-        return {'genres' : genre_list}
+        return genre_list, 200
 
     @jwt_required   
     @is_admin 
