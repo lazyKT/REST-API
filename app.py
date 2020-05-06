@@ -9,6 +9,8 @@ from resources.songs import Song, SongList
 from resources.genres import Genre, GenreList
 from db import db
 
+import models.genre as genre
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'  # !!! Link to database location
@@ -24,7 +26,10 @@ CORS(app)
 @app.before_first_request
 def create_database_tables():
     db.create_all()
-
+    status_code = genre.import_data_from_json()
+    log_txt = 'Data Initialization Finished! '
+    result_txt = 'Data Created! -' if status_code == 0 else 'Data Already Existed!'
+    app.logger.info(log_txt+result_txt+ " Status Code - " + str(status_code))
 
 @app.route('/')
 def index():
@@ -92,7 +97,7 @@ def revoked_token():
 
 api.add_resource(Song, '/songs/<int:_id_>')
 api.add_resource(SongList, '/songs')
-api.add_resource(Genre, '/genre/<string:name>')
+api.add_resource(Genre, '/genre/<int:_id>')
 api.add_resource(GenreList, '/genres')
 api.add_resource(UserRegister, '/register')
 api.add_resource(User, '/user/<int:user_id>')

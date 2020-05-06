@@ -59,7 +59,7 @@ class User(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('username', type=str, required=True, help="This field cannot be empty!")
     parser.add_argument('email', type=str, required=False, help="This field cannot be empty!")
-    parser.add_argument('password', type=str)
+    #.add_argument('password', type=str)
 
     @jwt_required
     def get(self, user_id):
@@ -82,7 +82,6 @@ class User(Resource):
 
 
     @jwt_required
-    @is_admin
     def put(self, user_id):
         user = UserModel.find_by_id(user_id)
         current_user = get_jwt_identity()
@@ -114,7 +113,7 @@ class UserLogin(Resource):
         # !!! below is the same with the authentication used in JWT(app,authentication,identity)
         if user and Hash_Password.check_pwd(data["password"], user.password):
             # !!! identity= is the same with the identity used in JWT(app,authentication,identity)
-            access_token = create_access_token(identity=user.id, fresh=True)  # !!! Create Token for authentication
+            access_token = create_access_token(identity=user.id, fresh=True, expires_delta=False)  # !!! Create Token for authentication
             refresh_token = create_refresh_token(user.id) # !!! Refreshing token to extend authenticated period
             return {
                 'id': user.id,
@@ -122,6 +121,7 @@ class UserLogin(Resource):
                 'refresh_token': refresh_token,
                 'role': user.role,
                 'username': user.username,
+                'uuid': user.user_id,
                 'email': user.email
             }, 200
 
@@ -149,7 +149,7 @@ class TokenRefresh(Resource):
         current_user = UserModel.find_by_id(current_user_id)
         if not safe_str_cmp(current_user.password, self.parser.parse_args()['password']):
             return {'msg': "Wrong Credentials!"}, 401
-        new_token = create_access_token(identity=current_user_id, fresh=False)
+        new_token = create_access_token(identity=current_user_id, fresh=False, expires_delta=False)
         return {'access_token': new_token}, 200
 
 class UserList(Resource):

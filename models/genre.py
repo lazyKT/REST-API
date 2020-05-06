@@ -1,4 +1,6 @@
 from db import db
+import os
+import json
 
 
 # !!! This is a helper class to simplify the db operations
@@ -8,14 +10,17 @@ class GenreModel(db.Model):
     __tablename__ = "genres"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
+    cover_url = db.Column(db.String(80))
 
-    songs = db.relationship('SongModel', lazy='dynamic') # !!! Join tow tables, genres and songs
+    songs = db.relationship('SongModel', lazy='dynamic') # !!! Join two tables, genres and songs
 
-    def __init__(self, name):
+    def __init__(self, name, cover_url):
         self.name = name
+        self.cover_url = cover_url
     
     def json(self):
         return {
+            'id': self.id,
             'name': self.name,
             'songs': [song.json() for song in self.songs.all()]  
         }
@@ -39,3 +44,28 @@ class GenreModel(db.Model):
     def delete_genre(self):
         db.session.delete(self)
         db.session.commit()
+
+    
+    # def import_data_from_json(self):
+    #     file_path = ''
+    #     json_file = ''
+    #     json_data = ''
+        
+    #     for data in json_data['name']:
+    #         self.add_genre(data)
+
+
+
+def import_data_from_json():
+        json_file = open('genres.json')
+        json_data = json.load(json_file)
+        
+        for data in json_data:
+            genre = GenreModel.find_by_name(data['name'])
+            if genre:
+                return 1
+            else:
+                new_genre = GenreModel(data['name'])
+                new_genre.add_genre()
+            
+        return 0

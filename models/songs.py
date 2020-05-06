@@ -8,6 +8,7 @@ class SongModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
     artist = db.Column(db.String(80))
+    song_url = db.Column(db.String(80))
 
     genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))  # Genre ID as an Foreign Key For Songs
     genre = db.relationship('GenreModel')  # !!! Join two tables, genres and songs
