@@ -147,10 +147,34 @@ class TokenRefresh(Resource):
     def post(self):
         current_user_id = get_jwt_identity()
         current_user = UserModel.find_by_id(current_user_id)
-        if not safe_str_cmp(current_user.password, self.parser.parse_args()['password']):
+        if not Hash_Password.check_pwd(self.parser.parse_args()["password"], current_user.password):
             return {'msg': "Wrong Credentials!"}, 401
         new_token = create_access_token(identity=current_user_id, fresh=False, expires_delta=False)
         return {'access_token': new_token}, 200
+
+
+class ChangePassword(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('new_pwd', required=True, help="Data must not be empty!!!")
+
+    @jwt_required
+    def put(self, _id):
+        user = UserModel.find_by_id(_id)
+        current_id = get_jwt_identity()
+
+        pwd = Hash_Password(self.parser.parse_args()['new_pwd'])
+        password = pwd.hash_pwd()
+
+        if user.id != current_id:
+            return {'msg': "Invalid Requests"}, 401
+        
+        if user:
+            UserModel.changePwd(_id, password)
+            return {'msg': "Password has been changed!"}, 200
+        else:
+            return {'msg': "User Not Found!!"}, 404
+
 
 class UserList(Resource):
 

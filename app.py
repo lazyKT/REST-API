@@ -4,7 +4,8 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
 from models.users import UserModel
-from resources.users import UserRegister, User, UserLogin, TokenRefresh, UserLogout, UserList
+from resources.users import (UserRegister, User, UserLogin, 
+        TokenRefresh, UserLogout, UserList, ChangePassword)
 from resources.songs import Song, SongList
 from resources.genres import Genre, GenreList
 from db import db
@@ -105,6 +106,7 @@ api.add_resource(UserLogin, '/login')
 api.add_resource(TokenRefresh, '/refresh')
 api.add_resource(UserLogout, '/logout')
 api.add_resource(UserList, '/users')
+api.add_resource(ChangePassword,'/changepwd/<int:_id>')
 
 # Main Program Here __main__
 if __name__ == '__main__':

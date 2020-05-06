@@ -89,6 +89,12 @@ class UserModel(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    @classmethod
+    def changePwd(cls, _id, newPwd):
+        user = cls.find_by_id(_id)
+        user.password = newPwd
+        db.session.commit()
+
 
 
 class Hash_Password:
@@ -108,7 +114,6 @@ class Hash_Password:
     def check_pwd(cls, pwd, store_pwd):
         salt_from_storage = store_pwd[:32]
         key_from_storage = store_pwd[32:]
-        print("Checking password____")
         key  = hashlib.pbkdf2_hmac('sha256', pwd.encode('utf-8'), salt_from_storage, 1000)
 
         return True if key == key_from_storage else False
