@@ -1,9 +1,9 @@
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import (
-    jwt_required, 
-    get_jwt_claims, 
-    jwt_optional, 
-    get_jwt_identity, 
+    jwt_required,
+    get_jwt_claims,
+    jwt_optional,
+    get_jwt_identity,
     fresh_jwt_required
 )
 import json
@@ -17,34 +17,35 @@ class Song(Resource):
     # request parsing, validate the payload
     parser = reqparse.RequestParser()
     parser.add_argument('title', required=True, help="This field cannot be empty!")
-    parser.add_argument('artist',required=True,help="This field cannot be empty!")
-    parser.add_argument('genre_id',type=int,required=True,help="Song must have genre!")
+    parser.add_argument('artist', required=True, help="This field cannot be empty!")
+    parser.add_argument('genre_id', type=int, required=True, help="Song must have genre!")
 
-    #@jwt_required
-    def get(self, _id_):
+    @classmethod
+    @jwt_required
+    def get(cls, _id_):
         song = SongModel.find_by_id(_id_)
         if song:
             return song.json()
         return {'msg': 'Song Not Exists'}
 
-
+    @classmethod
     @jwt_required
     @is_admin
-    def delete(self,_id_):
+    def delete(cls, _id_):
         claims = get_jwt_claims()
         if not claims['is_admin']:
-            return {'msg': "Admin Previllage Required."}, 401
+            return {'msg': "Admin Privilege Required."}, 401
         song = SongModel.find_by_id(_id_)
         if song:
             song.delete_from_db()
             return {'msg': 'Song deleted successfully!!'}, 200
-            #return {'msg': 'Unsuccessful Operation!'}, 400
+            # return {'msg': 'Unsuccessful Operation!'}, 400
         return {'msg': "Song Not Exists!"}, 400
 
-
+    @classmethod
     @jwt_required
     @is_admin
-    def put(self,_id_):
+    def put(cls, _id_):
         request_data = Song.parser.parse_args()
         updated_song = SongModel.find_by_id(_id_)
         song_to_update = SongModel(**request_data)
@@ -54,26 +55,28 @@ class Song(Resource):
             try:
                 song_to_update.update_song(_id_, request_data)
             except:
-                return {'msg': "Error Ocurrs During Operations!"}, 500 
+                return {'msg': "Error Occurs During Operations!"}, 500
         else:
             # !!! Create new song if not exists
             try:
                 song_to_update.save_to_db()
             except:
-                return {'msg': "Error Ocurrs During Operations!"}, 500 
+                return {'msg': "Error Occurs During Operations!"}, 500
         return updated_song.json()
 
 
 class SongList(Resource):
-    
-    #@jwt_optional
-    def get(self):
-        user_id = get_jwt_identity()   # !!! get user_id from JWT Token
+
+    @classmethod
+    # @jwt_optional
+    def get(cls):
+        user_id = get_jwt_identity()  # !!! get user_id from JWT Token
         songs = [song.json() for song in SongModel.query.all()]
         return songs
 
-    @fresh_jwt_required   # !!! Token must be fresh in order to post a song
-    def post(self):
+    @classmethod
+    @fresh_jwt_required  # !!! Token must be fresh in order to post a song
+    def post(cls):
         data = Song.parser.parse_args()
         genre_exists = GenreModel.find_by_id(data['genre_id'])
         if genre_exists:

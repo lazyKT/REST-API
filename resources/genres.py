@@ -7,19 +7,21 @@ from __wrappers__ import is_admin
 class Genre(Resource):
 
     parser = reqparse.RequestParser()
-    parser.add_argument('name', required=True ,help="This field must be filled out!")
+    parser.add_argument('name', required=True, help="This field must be filled out!")
     parser.add_argument('cover_url', required=False)
-    
+
+    @classmethod
     @jwt_required
-    def get(self, _id):
+    def get(cls, _id):
         genre = GenreModel.find_by_id(_id)
         if genre:
             return genre.json(), 200
         return {'msg': 'Genre Not Found!!'}
 
+    @classmethod
     @jwt_required
     @is_admin
-    def delete(self, _id):
+    def delete(cls, _id):
         genre_to_delete = GenreModel.find_by_id(_id)
         if genre_to_delete:
             GenreModel.delete_genre(genre_to_delete)
@@ -30,14 +32,16 @@ class Genre(Resource):
 
 class GenreList(Resource):
 
+    @classmethod
     @jwt_required
-    def get(self):
+    def get(cls):
         genre_list = [genre.json() for genre in GenreModel.query.all()]
         return genre_list, 200
 
+    @classmethod
     @jwt_required   
     @is_admin 
-    def post(self):
+    def post(cls):
         data = Genre.parser.parse_args()
         if GenreModel.find_by_name(data['name']):
             return {'msg': "Genre already Exists!"}

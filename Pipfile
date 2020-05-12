@@ -7,6 +7,10 @@ verify_ssl = true
 
 [packages]
 flask = "*"
+flask-jwt-extended = "*"
+flask-sqlalchemy = "*"
+marshmallow = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.8"
