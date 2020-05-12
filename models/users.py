@@ -4,7 +4,6 @@ import hashlib
 import os
 import uuid
 
-
 # !!! This is a helper class to simplify the db operations
 """
  Rule for the User Model: 
@@ -13,9 +12,9 @@ import uuid
  Email should be valid.
 """
 
-class UserModel(db.Model):
 
-    BLACKLIST = set() # For revoking the Jwt Token and Log out the user
+class UserModel(db.Model):
+    BLACKLIST = set()  # For revoking the Jwt Token and Log out the user
 
     # !!! Defining database table for user model  #SQLAlchemy
     __tablename__ = "users"
@@ -26,7 +25,8 @@ class UserModel(db.Model):
     password = db.Column(db.String(80))
     profile_pic = db.Column(db.String(80))
     role = db.Column(db.String(80))
-    timeStamp = db.Column(db.String(80))
+    createdOn = db.Column(db.String(80))
+    updatedOn = db.Column(db.String(80))
 
     def __init__(self, username, email, password, role, profile_pic):
         current_time = datetime.now()
@@ -38,34 +38,35 @@ class UserModel(db.Model):
         self.user_id = str(uuid.uuid1())
         self.role = role
         self.profile_pic = profile_pic
-        self.timeStamp = datetime.strftime(current_time, '%m/%d/%y %H:%M:%S')
-    
+        self.createdOn = datetime.strftime(current_time, '%m/%d/%y %H:%M:%S')
+        self.updatedOn = datetime.strftime(current_time, '%m/%d/%y %H:%M:%S')
+
     def json(self):
         return {
             'id': self.id,
-            'unique_id' : self.user_id,
+            'unique_id': self.user_id,
             'username': self.username,
             'email': self.email,
             'role': self.role,
-            'profile_pic' : self.profile_pic,
-            'created_on' : self.timeStamp
+            'profile_pic': self.profile_pic,
+            'created_on': self.createdOn,
+            'updated_on': self.updatedOn
         }
 
-    #??? What is a @classmethod? Class Method is used to modified the class
-    #!!! cls is class method instance instead of self or classname
+    # ??? What is a @classmethod? Class Method is used to modified the class
+    # !!! cls is class method instance instead of self or classname
     @classmethod
-    def find_by_username(cls,username):
+    def find_by_username(cls, username):
         # same: "SELECT * FROM users WHERE username=username"
         return cls.query.filter_by(username=username).first()
 
     @classmethod
-    def find_by_email(cls,email):
-        return cls.query.filter_by(email=email).first() # same: SELECT * FROM users WHERE email=email
-
+    def find_by_email(cls, email):
+        return cls.query.filter_by(email=email).first()  # same: SELECT * FROM users WHERE email=email
 
     # !!! Find user by id inside database
     @classmethod
-    def find_by_id(cls,_id):
+    def find_by_id(cls, _id):
         # same: "SELECT * FROM users WHERE id=_id"
         return cls.query.filter_by(id=_id).first()
 
@@ -74,6 +75,7 @@ class UserModel(db.Model):
         user = cls.find_by_id(_id)
         user.username = update_user['username']
         user.email = update_user['email']
+        user.updatedOn = datetime.strftime(datetime.now(), '%m/%d/%y %H:%M:%S')
         db.session.commit()
 
     @classmethod
@@ -96,15 +98,13 @@ class UserModel(db.Model):
         db.session.commit()
 
 
-
 class Hash_Password:
 
     def __init__(self, pwd):
         self.salt = os.urandom(32)
         self.pwd = pwd
 
-    
-    def hash_pwd (self):
+    def hash_pwd(self):
         key = hashlib.pbkdf2_hmac('sha256', self.pwd.encode('utf-8'), self.salt, 1000)
         store_pwd = self.salt + key
 
@@ -114,6 +114,6 @@ class Hash_Password:
     def check_pwd(cls, pwd, store_pwd):
         salt_from_storage = store_pwd[:32]
         key_from_storage = store_pwd[32:]
-        key  = hashlib.pbkdf2_hmac('sha256', pwd.encode('utf-8'), salt_from_storage, 1000)
+        key = hashlib.pbkdf2_hmac('sha256', pwd.encode('utf-8'), salt_from_storage, 1000)
 
         return True if key == key_from_storage else False

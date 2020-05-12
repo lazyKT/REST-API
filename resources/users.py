@@ -87,11 +87,11 @@ class User(Resource):
         user = UserModel.find_by_id(user_id)
         current_user = get_jwt_identity()
 
-        if get_jwt_claims()['is_admin']:  # Is admin. the editing is allowed.
+        if user and get_jwt_claims()['is_admin']:  # Is admin. the editing is allowed.
             UserModel.update(user_id, cls.parser.parse_args())
             return {'msg': "Successfully Updated!!!"}, 200
 
-        if user_id != current_user:  # Strictly prevent users to access others' data
+        if user and user_id != current_user:  # Strictly prevent users to access others' data
             return {'msg': "Not Accessible Content!!!"}, 401
 
         if user:
