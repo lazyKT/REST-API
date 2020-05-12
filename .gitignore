@@ -1,1 +1,5 @@
 data.db
+Procfile
+runtime.txt
+uwsgi.ini
+genres.json
