@@ -3,16 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4fea477c-1df5-4dd6-ab16-bfc3d5ed8d80" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pipfile" beforeDir="false" afterPath="$PROJECT_DIR$/Pipfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pipfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Pipfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/marsh.py" beforeDir="false" afterPath="$PROJECT_DIR$/marsh.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/songs.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/songs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/users.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/songs.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/songs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/users.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/songs.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/songs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/user_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/user_schema.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

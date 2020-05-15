@@ -9,7 +9,7 @@ from flask_jwt_extended import (
     get_raw_jwt,
     get_jwt_claims
 )
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 from models.users import UserModel, Hash_Password
 from schemas.user_schema import UserSchema
 from __wrappers__ import is_admin
@@ -45,8 +45,9 @@ class User(Resource):
 
     @classmethod
     @jwt_required
-    @is_admin
     def get(cls, user_id):
+        if get_jwt_identity() != user_id:
+            return {'msg': "Unauthorized Content"}, 401
         user = UserModel.find_by_id(user_id)
         if not user:
             return {'msg': "Invalid User!! User Not Exists!!"}, 400
@@ -134,16 +135,15 @@ class TokenRefresh(Resource):
 
 
 class ChangePassword(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('new_pwd', required=True, help="Data must not be empty!!!")
 
     @classmethod
     @jwt_required
     def put(cls, _id):
+        data = user_schema.load(request.get_json())
         user = UserModel.find_by_id(_id)
         current_id = get_jwt_identity()
 
-        pwd = Hash_Password(cls.parser.parse_args()['new_pwd'])
+        pwd = Hash_Password(data['password'])
         password = pwd.hash_pwd()
 
         if user.id != current_id:
