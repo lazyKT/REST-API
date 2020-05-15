@@ -1,4 +1,6 @@
+from marshmallow import ValidationError
 from werkzeug.security import safe_str_cmp
+from flask import request
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -10,20 +12,31 @@ from flask_jwt_extended import (
 )
 from flask_restful import Resource, reqparse
 from models.users import UserModel, Hash_Password
+from schemas.user_schema import UserSchema
 from __wrappers__ import is_admin
+
+user_schema = UserSchema()
 
 
 class UserRegister(Resource):
-    # !!! request parsing arguments
-    parser = reqparse.RequestParser()
-    parser.add_argument('username', type=str, required=True, help="This field cannot be empty!")
-    parser.add_argument('email', type=str, required=False, help="This field cannot be empty!")
-    parser.add_argument('password', type=str, required=True, help="This field cannot be empty!")
-    parser.add_argument('role', type=str, required=False)
-    parser.add_argument('profile_pic', type=str, required=False)
 
     @classmethod
     def post(cls):
+        try:
+            user = user_schema.load(request.get_json())
+        except ValidationError as err:
+            return err.messages, 400
+
+        if UserModel.find_by_username(user.username):
+            return {"msg": "User Already Exists"}, 400
+
+        if UserModel.find_by_email(user.email):
+            return {"msg": "This email already has a registered account."}, 400
+
+        role = "user" if user.role == '' else "admin"
+        pwd = Hash_Password(user.password)
+        password = pwd.hash_pwd()
+
         # !!! Fetch data from request parser aka reqparse
         data = cls.parser.parse_args()
 

@@ -20,11 +20,11 @@ class UserModel(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(80))
-    username = db.Column(db.String(80))
-    email = db.Column(db.String(80))
-    password = db.Column(db.String(80))
+    username = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(80), nullable=False)
     profile_pic = db.Column(db.String(80))
-    role = db.Column(db.String(80))
+    role = db.Column(db.String(80), nullable=False)
     createdOn = db.Column(db.String(80))
     updatedOn = db.Column(db.String(80))
 
@@ -82,7 +82,7 @@ class UserModel(db.Model):
     def change_password(cls, _id):
         pass
 
-    # !!! Uesr Register and Add The User's data to Database
+    # !!! User Register and Add The User's data to Database
     def register(self):
         db.session.add(self)
         db.session.commit()

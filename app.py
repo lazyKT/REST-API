@@ -9,7 +9,7 @@ from resources.users import (UserRegister, User, UserLogin,
 from resources.songs import Song, SongList
 from resources.genres import Genre, GenreList
 from db import db
-
+from marsh import marsh
 import models.genre as genre
 
 app = Flask(__name__)
@@ -121,4 +121,5 @@ api.add_resource(ChangePassword, '/changepwd/<int:_id>')
 # Main Program Here __main__
 if __name__ == '__main__':
     db.init_app(app)
+    marsh.init_app(app)
     app.run(port=8000, debug=True)
