@@ -15,6 +15,7 @@ flask-marshmallow-b7 = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
 python-dotenv = "*"
+flask-uploads = "*"
 
 [requires]
 python_version = "3.8"

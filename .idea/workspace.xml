@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4fea477c-1df5-4dd6-ab16-bfc3d5ed8d80" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pipfile" beforeDir="false" afterPath="$PROJECT_DIR$/Pipfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pipfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Pipfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,10 +132,10 @@
       <screen x="0" y="0" width="1280" height="690" />
     </state>
     <state x="313" y="58" key="RollbackChangesDialog/0.0.1280.690@0.0.1280.690" timestamp="1589295553101" />
-    <state x="158" y="0" key="SettingsEditor" timestamp="1589543270624">
+    <state x="158" y="0" key="SettingsEditor" timestamp="1589547262481">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state x="158" y="0" key="SettingsEditor/0.0.1280.690@0.0.1280.690" timestamp="1589543270624" />
+    <state x="158" y="0" key="SettingsEditor/0.0.1280.690@0.0.1280.690" timestamp="1589547262481" />
     <state x="135" y="169" key="com.intellij.ide.util.TipDialog" timestamp="1589508659536">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
