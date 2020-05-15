@@ -1,3 +1,4 @@
+import typing
 from marshmallow import Schema, fields
 from werkzeug.datastructures import FileStorage
 
@@ -5,10 +6,12 @@ from werkzeug.datastructures import FileStorage
 
 
 class FileStorageField(fields.Field):
-    def _deserialize(self, value, attr, data):
-        default_error_messages = {
-            "invalid": "Not a Valid Image",
-        }
+
+    default_error_messages = {
+        "invalid": "Not a Valid Image",
+    }
+
+    def _deserialize(self, value, attr, data, **kwargs):
         if value is None:
             return None
         if not isinstance(value, FileStorage):

@@ -5,20 +5,25 @@ from flask_restful import Api
 from flask import Flask, render_template, jsonify
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from flask_uploads import configure_uploads, patch_request_class
 
+from db import db
+from marsh import marsh
+import models.genre as genre
 from models.users import UserModel
 from resources.users import (UserRegister, User, UserLogin,
                              TokenRefresh, UserLogout, UserList, ChangePassword)
 from resources.songs import Song, SongList
 from resources.genres import Genre, GenreList
-from db import db
-from marsh import marsh
-import models.genre as genre
+from resources.images import ImageUpload, Image
+from lib.image_helper import IMAGE_SET
 
 app = Flask(__name__)
 load_dotenv(".env", verbose=True)
 app.config.from_object("default_config")
 app.config.from_envvar("APPLICATION_SETTINGS")
+patch_request_class(app, 16 * 1024 * 1024)  # 16mb max size
+configure_uploads(app, IMAGE_SET)
 api = Api(app)
 CORS(app)
 
@@ -114,9 +119,11 @@ api.add_resource(TokenRefresh, '/refresh')
 api.add_resource(UserLogout, '/logout')
 api.add_resource(UserList, '/users')
 api.add_resource(ChangePassword, '/changepwd/<int:_id>')
+api.add_resource(ImageUpload, "/upload/image")
+api.add_resource(Image, "/img/<string:filename>")
 
 # Main Program Here __main__
 if __name__ == '__main__':
     db.init_app(app)
     marsh.init_app(app)
-    app.run(port=8000, debug=True)
+    app.run(port=8000)
