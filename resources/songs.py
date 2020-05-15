@@ -13,7 +13,7 @@ from models.songs import SongModel
 from models.genre import GenreModel
 from __wrappers__ import is_admin
 
-song_schema = SongSchema
+song_schema = SongSchema()
 
 
 class Song(Resource):
@@ -23,7 +23,7 @@ class Song(Resource):
     def get(cls, _id_):
         song = SongModel.find_by_id(_id_)
         if song:
-            return song_schema.dump(song), 200
+            return song.json(), 200
         return {'msg': 'Song Not Exists'}
 
     @classmethod
@@ -44,37 +44,39 @@ class Song(Resource):
     @jwt_required
     @is_admin
     def put(cls, _id_):
-        if not SongModel.find_by_id(_id_):
+        song = SongModel.find_by_id(_id_)
+        if not song:
             return {"msg": "Invalid Song. Doesn't exist!!"}, 400
-
-        song = request.get_json()
-        update_song = SongModel(**song)
         try:
-            update_song.update_song(_id_, song)
+            song_data = song_schema.load(request.get_json())
+            song.update_song(_id_, song_data)
+            return song.json(), 200
         except ValidationError as err:
-            return {'msg': err.messages}, 400
-        return song_schema.dump(SongModel.find_by_id(_id_)), 200
+            return err.messages, 400
+        except:
+            return {'msg': "Error Performing Request!"}, 500
 
 
 class SongList(Resource):
 
     @classmethod
-    # @jwt_optional
     def get(cls):
-        user_id = get_jwt_identity()  # !!! get user_id from JWT Token
         songs = [song.json() for song in SongModel.query.all()]
         return songs
 
     @classmethod
-    @fresh_jwt_required  # !!! Token must be fresh in order to post a song
+    # @fresh_jwt_required  # !!! Token must be fresh in order to post a song
     def post(cls):
-        data = Song.parser.parse_args()
-        genre_exists = GenreModel.find_by_id(data['genre_id'])
-        if genre_exists:
-            new_song = SongModel(**data)
-            try:
+        try:
+            song_data = song_schema.load(request.get_json())
+            genre = GenreModel.find_by_id(song_data['genre_id'])
+            if genre:
+                new_song = SongModel(**song_data)
                 new_song.save_to_db()
                 return new_song.json(), 201
-            except:
-                return {'msg': 'Error occurs during the operation!'}, 500
-        return {'msg': "Genre must be existed before song is created"}, 400
+            return {'msg': "Invalid Genre! Not Exists!"}, 400
+        except ValidationError as err:
+            return err.messages, 400
+        except:
+            return {'msg': "Error Performing Request!"}, 500
+

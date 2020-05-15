@@ -1,8 +1,9 @@
-from marsh import marsh
-from models.songs import SongModel
+from marshmallow import Schema, fields
 
 
-class SongSchema(marsh.SQLAlchemySchema):
-    class Meta:
-        model = SongModel
-        include_fk = True  # Include the foreign Key
+class SongSchema(Schema):
+    id = fields.Int(dump_only=True)
+    title = fields.Str()
+    posted_by = fields.Int()
+    url = fields.Str()
+    genre_id = fields.Int()

@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="4fea477c-1df5-4dd6-ab16-bfc3d5ed8d80" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/users.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/songs.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/songs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/songs.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/songs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/songs.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/songs.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,10 +93,10 @@
       <screen x="0" y="0" width="1280" height="690" />
     </state>
     <state x="403" y="151" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.690@0.0.1280.690" timestamp="1589517113390" />
-    <state x="372" y="95" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1589521477945">
+    <state x="372" y="95" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1589533177427">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state x="372" y="95" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.690@0.0.1280.690" timestamp="1589521477945" />
+    <state x="372" y="95" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.690@0.0.1280.690" timestamp="1589533177427" />
     <state width="1260" height="208" key="GridCell.Tab.0.bottom" timestamp="1589526370368">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
