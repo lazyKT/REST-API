@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+
 from flask_restful import Api
 from flask import Flask, render_template, jsonify
 from flask_jwt_extended import JWTManager
@@ -13,13 +16,9 @@ from marsh import marsh
 import models.genre as genre
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'  # !!! Link to database location
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['PROPAGATE_EXCEPTIONS'] = True  # !!! Allow JWT to raise errors to Flask
-app.config['JWT_SECRET_KEY'] = "meow"
-app.config['JWT_BLACKLIST_ENABLED'] = True
-app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access',
-                                            'refresh']  # !!! BlackList checks on both access and refresh token
+load_dotenv(".env", verbose=True)
+app.config.from_object("default_config")
+app.config.from_envvar("APPLICATION_SETTINGS")
 api = Api(app)
 CORS(app)
 

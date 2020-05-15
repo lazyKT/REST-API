@@ -3,3 +3,5 @@ Procfile
 runtime.txt
 uwsgi.ini
 genres.json
+.env
+default_config.py
