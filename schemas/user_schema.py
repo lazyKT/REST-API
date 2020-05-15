@@ -1,9 +1,13 @@
-from marsh import marsh
-from models.users import UserModel
+from marshmallow import Schema, fields
 
 
-class UserSchema(marsh.ModelSchema):
-    class Meta:
-        model = UserModel
-        load_only = ("password",)
-        dump_only = ("id",)
+class UserSchema(Schema):
+    id = fields.Int(dump_only=True)
+    uuid = fields.Int(dump_only=True)
+    email = fields.Str()
+    username = fields.Str()
+    password = fields.Str(load_only=True)
+    role = fields.Str()
+    profile_pic = fields.Str()
+    createdOn = fields.Str(dump_only=True)
+    updatedOn = fields.Str(dump_only=True)

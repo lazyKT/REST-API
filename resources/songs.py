@@ -6,26 +6,24 @@ from flask_jwt_extended import (
     get_jwt_identity,
     fresh_jwt_required
 )
-import json
+from flask import request
+from marshmallow import ValidationError
+from schemas.songs import SongSchema
 from models.songs import SongModel
 from models.genre import GenreModel
 from __wrappers__ import is_admin
 
+song_schema = SongSchema
+
 
 class Song(Resource):
-    # initiate reqparse which is similar to Patch
-    # request parsing, validate the payload
-    parser = reqparse.RequestParser()
-    parser.add_argument('title', required=True, help="This field cannot be empty!")
-    parser.add_argument('artist', required=True, help="This field cannot be empty!")
-    parser.add_argument('genre_id', type=int, required=True, help="Song must have genre!")
 
     @classmethod
     @jwt_required
     def get(cls, _id_):
         song = SongModel.find_by_id(_id_)
         if song:
-            return song.json()
+            return song_schema.dump(song), 200
         return {'msg': 'Song Not Exists'}
 
     @classmethod
@@ -46,23 +44,16 @@ class Song(Resource):
     @jwt_required
     @is_admin
     def put(cls, _id_):
-        request_data = Song.parser.parse_args()
-        updated_song = SongModel.find_by_id(_id_)
-        song_to_update = SongModel(**request_data)
-        # !!! Check song if exists or not
-        if updated_song:
-            # !!! update the existing song
-            try:
-                song_to_update.update_song(_id_, request_data)
-            except:
-                return {'msg': "Error Occurs During Operations!"}, 500
-        else:
-            # !!! Create new song if not exists
-            try:
-                song_to_update.save_to_db()
-            except:
-                return {'msg': "Error Occurs During Operations!"}, 500
-        return updated_song.json()
+        if not SongModel.find_by_id(_id_):
+            return {"msg": "Invalid Song. Doesn't exist!!"}, 400
+
+        song = request.get_json()
+        update_song = SongModel(**song)
+        try:
+            update_song.update_song(_id_, song)
+        except ValidationError as err:
+            return {'msg': err.messages}, 400
+        return song_schema.dump(SongModel.find_by_id(_id_)), 200
 
 
 class SongList(Resource):

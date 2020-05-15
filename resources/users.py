@@ -1,5 +1,4 @@
 from marshmallow import ValidationError
-from werkzeug.security import safe_str_cmp
 from flask import request
 from flask_jwt_extended import (
     create_access_token,
@@ -27,62 +26,31 @@ class UserRegister(Resource):
         except ValidationError as err:
             return err.messages, 400
 
-        if UserModel.find_by_username(user.username):
+        if UserModel.find_by_username(user['username']):
             return {"msg": "User Already Exists"}, 400
 
-        if UserModel.find_by_email(user.email):
+        if UserModel.find_by_email(user['email']):
             return {"msg": "This email already has a registered account."}, 400
 
-        role = "user" if user.role == '' else "admin"
-        pwd = Hash_Password(user.password)
-        password = pwd.hash_pwd()
-
-        # !!! Fetch data from request parser aka reqparse
-        data = cls.parser.parse_args()
-
-        if UserModel.find_by_email(data['email']):
-            return {'msg': "This email already has registered account."}, 400
-
-        if UserModel.find_by_username(data['username']):
-            return {'msg': "Username '{}' already exists!".format(data['username'])}, 400
-
-        # !!! Add user to database
-        user_role = "user" if data['role'] == '' else "admin"
-        # salt = os.urandom(32)
-        pwd = Hash_Password(data['password'])
-        password = pwd.hash_pwd()
-
-        new_user = UserModel(data['username'], data['email'], password, user_role, data['profile_pic'])
+        new_user = UserModel(**request.get_json())
         try:
             new_user.register()
         except:
-            return {'msg': 'Error Occurs During the Operation!'}, 500
-        return new_user.json(), 201
+            return {'msg': "Error Performing Request!!"}, 500
+
+        return {'msg': user_schema.dump(new_user)}, 200
+
+
+class User(Resource):
 
     @classmethod
     @jwt_required
     @is_admin
-    def get(cls):
-        return {'users': [user.json() for user in UserModel.query.all()]}
-
-
-class User(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('username', type=str, required=True, help="This field cannot be empty!")
-    parser.add_argument('email', type=str, required=False, help="This field cannot be empty!")
-
-    # .add_argument('password', type=str)
-
-    @classmethod
-    @jwt_required
     def get(cls, user_id):
         user = UserModel.find_by_id(user_id)
-        current_user = get_jwt_identity()
-        if not user_id == current_user:
-            return {'msg': "Unauthorized Content!"}, 401
-        if user:
-            return user.json(), 200
-        return {'msg': "User Not Found!"}, 404
+        if not user:
+            return {'msg': "Invalid User!! User Not Exists!!"}, 400
+        return user_schema.dump(user), 200
 
     @classmethod
     @jwt_required
@@ -100,28 +68,26 @@ class User(Resource):
         user = UserModel.find_by_id(user_id)
         current_user = get_jwt_identity()
 
-        if user and get_jwt_claims()['is_admin']:  # Is admin. the editing is allowed.
-            UserModel.update(user_id, cls.parser.parse_args())
-            return {'msg': "Successfully Updated!!!"}, 200
+        if not user:
+            return {'msg': "User Not Found!!"}, 400
 
-        if user and user_id != current_user:  # Strictly prevent users to access others' data
-            return {'msg': "Not Accessible Content!!!"}, 401
-
-        if user:
-            UserModel.update(user_id, cls.parser.parse_args())
-            return {'msg': "Successfully Updated!!!"}, 200
-
-        return {'msg': "User Not Found!"}, 404
+        try:
+            if current_user == user_id or get_jwt_claims()['is_admin']:
+                edit_user = user_schema.load(request.get_json())
+                UserModel.update(user_id, edit_user)
+                return {'msg': "Successfully Updated!!"}, 200
+            return {'msg': "Unauthorized Content!!"}, 401
+        except ValidationError as err:
+            return err.messages, 400
+        except:
+            return {'msg': "Error Performing Request!!"}, 500
 
 
 class UserLogin(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('username', type=str, required=True, help="Username must not be blank!")
-    parser.add_argument('password', type=str, required=True, help="Password must not be blank!")
 
     @classmethod
     def post(cls):
-        data = cls.parser.parse_args()
+        data = user_schema.load(request.get_json())
         user = UserModel.find_by_username(data["username"])
 
         # !!! below is the same with the authentication used in JWT(app,authentication,identity)
@@ -154,15 +120,14 @@ class UserLogout(Resource):
 
 
 class TokenRefresh(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('password', required=True, help="Please enter your password to countinue")
 
     @classmethod
     @jwt_refresh_token_required
     def post(cls):
+        data = user_schema.load(request.get_json())
         current_user_id = get_jwt_identity()
         current_user = UserModel.find_by_id(current_user_id)
-        if not Hash_Password.check_pwd(cls.parser.parse_args()["password"], current_user.password):
+        if not Hash_Password.check_pwd(data["password"], current_user.password):
             return {'msg': "Wrong Credentials!"}, 401
         new_token = create_access_token(identity=current_user_id, fresh=False, expires_delta=False)
         return {'access_token': new_token}, 200
@@ -197,4 +162,4 @@ class UserList(Resource):
     @jwt_required
     @is_admin
     def get(cls):
-        return {'users': [user.json() for user in UserModel.query.all()]}, 200
+        return {'users': [user_schema.dump(user) for user in UserModel.query.all()]}, 200

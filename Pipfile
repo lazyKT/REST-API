@@ -13,6 +13,7 @@ marshmallow = "*"
 flask-cors = "*"
 flask-marshmallow-b7 = "*"
 flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"
 
 [requires]
 python_version = "3.8"

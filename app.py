@@ -1,5 +1,5 @@
 from flask_restful import Api
-from flask import Flask, jsonify, render_template
+from flask import Flask, render_template, jsonify
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
@@ -47,7 +47,6 @@ def about():
 jwt = JWTManager(app)
 
 
-# !!! claims are added to JWT Token for extra purposes
 @jwt.user_claims_loader
 def add_claims_to_jwt(identity):  # !!! identity comes from access_token
     user = UserModel.find_by_id(identity)
@@ -58,7 +57,6 @@ def add_claims_to_jwt(identity):  # !!! identity comes from access_token
     return {'is_admin': False}
 
 
-# !!! User inside the black list cannot access specific pages
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
     return decrypted_token['jti'] in UserModel.BLACKLIST
