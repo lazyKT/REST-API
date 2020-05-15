@@ -1,14 +1,16 @@
+from flask import request
 from flask_restful import Resource, reqparse
-from models.genre import GenreModel
 from flask_jwt_extended import jwt_required, get_jwt_claims
+from marshmallow import ValidationError
+
+from models.genre import GenreModel
+from schemas.genre import GenreSchema
 from __wrappers__ import is_admin
+
+genre_schema = GenreSchema()
 
 
 class Genre(Resource):
-
-    parser = reqparse.RequestParser()
-    parser.add_argument('name', required=True, help="This field must be filled out!")
-    parser.add_argument('cover_url', required=False)
 
     @classmethod
     @jwt_required
@@ -42,15 +44,16 @@ class GenreList(Resource):
     @jwt_required   
     @is_admin 
     def post(cls):
-        data = Genre.parser.parse_args()
-        if GenreModel.find_by_name(data['name']):
-            return {'msg': "Genre already Exists!"}
-        new_genre = GenreModel(data['name'], data['cover_url'])
-        new_genre.add_genre()
-        return {
-            'id': new_genre.id,
-            'name': new_genre.name,
-            'cover_url': new_genre.cover_url
-        }, 201
+        try:
+            data = genre_schema.load(request.get_json())
+            if GenreModel.find_by_name(data['name']):
+                return {'msg': "Genre Already Exists!"}, 400
+            new_genre = GenreModel(**data)
+            new_genre.add_genre()
+            return new_genre.json(), 201
+        except ValidationError as err:
+            return err.messages, 400
+        except:
+            return {'msg': "Error Performing Request!"}, 500
             
 

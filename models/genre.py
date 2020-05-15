@@ -9,18 +9,19 @@ class GenreModel(db.Model):
     __tablename__ = "genres"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
-    cover_url = db.Column(db.String(80))
+    url = db.Column(db.String(80))
 
     songs = db.relationship('SongModel', lazy='dynamic')  # !!! Join two tables, genres and songs
 
-    def __init__(self, name, cover_url):
+    def __init__(self, name, url=""):
         self.name = name
-        self.cover_url = cover_url
+        self.url = url
 
     def json(self):
         return {
             'id': self.id,
             'name': self.name,
+            'url': self.url,
             'songs': [song.json() for song in self.songs.all()]
         }
 
@@ -61,7 +62,7 @@ def import_data_from_json():
         if genre:
             return 1
         else:
-            new_genre = GenreModel(data['name'], "")
+            new_genre = GenreModel(data['name'])
             new_genre.add_genre()
 
     return 0
