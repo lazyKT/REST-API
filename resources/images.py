@@ -91,8 +91,8 @@ class Avatar(Resource):
     @jwt_required
     def get(cls, _id_):
         user_id = get_jwt_identity()
-        # if not get_jwt_claims()["is_admin"] and user_id != _id_:
-        #     return {'msg': "Unauthorized Content"}, 401
+        if not get_jwt_claims()["is_admin"] and user_id != _id_:
+            return {'msg': "Unauthorized Content"}, 401
         folder = "avatars"
         filename = f"user_{_id_}"
         try:

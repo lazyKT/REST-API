@@ -38,7 +38,7 @@ class UserRegister(Resource):
         except:
             return {'msg': "Error Performing Request!!"}, 500
 
-        return {'msg': user_schema.dump(new_user)}, 200
+        return {'msg': user_schema.dump(new_user)}, 201
 
 
 class User(Resource):

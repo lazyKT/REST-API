@@ -24,11 +24,10 @@ class UserModel(db.Model):
     username = db.Column(db.String)
     password = db.Column(db.String)
     role = db.Column(db.String)
-    profile_pic = db.Column(db.String)
     createdOn = db.Column(db.String)
     updatedOn = db.Column(db.String)
 
-    def __init__(self, username, email, password, role, profile_pic="null"):
+    def __init__(self, username, email, password, role):
         current_time = datetime.now()
         pwd = Hash_Password(password)
         hashed_pwd = pwd.hash_pwd()
@@ -38,7 +37,6 @@ class UserModel(db.Model):
         self.password = hashed_pwd
         self.user_id = str(uuid.uuid1())
         self.role = role
-        self.profile_pic = profile_pic
         self.createdOn = datetime.strftime(current_time, '%m/%d/%y %H:%M:%S')
         self.updatedOn = datetime.strftime(current_time, '%m/%d/%y %H:%M:%S')
 

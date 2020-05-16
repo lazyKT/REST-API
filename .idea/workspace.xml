@@ -3,8 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="4fea477c-1df5-4dd6-ab16-bfc3d5ed8d80" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/users.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/images.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/images.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/users.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/user_1/1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/user_1/3.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,10 +95,10 @@
       <screen x="0" y="0" width="1280" height="690" />
     </state>
     <state x="403" y="151" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.690@0.0.1280.690" timestamp="1589541550446" />
-    <state x="372" y="95" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1589533929105">
+    <state x="372" y="95" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1589603930182">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state x="372" y="95" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.690@0.0.1280.690" timestamp="1589533929105" />
+    <state x="372" y="95" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.690@0.0.1280.690" timestamp="1589603930182" />
     <state width="1260" height="208" key="GridCell.Tab.0.bottom" timestamp="1589564871328">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
