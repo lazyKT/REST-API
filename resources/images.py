@@ -78,7 +78,7 @@ class AvatarUpload(Resource):
                 return {'msg': "Internal Server Error. Request Failed!"}, 500
         ext = image_helper.get_extension(data["image"].filename)
         try:
-            avatar = filename+ext
+            avatar = filename+".png"
             avatar_path = image_helper.save_image(data["image"], folder=folder, name=avatar)
             basename = image_helper.get_basename(avatar_path)
             return {'msg': "Avatar, '{}' Uploaded Successfully!".format(basename)}, 201
