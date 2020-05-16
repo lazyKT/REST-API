@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4fea477c-1df5-4dd6-ab16-bfc3d5ed8d80" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/image_helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/lib/image_helper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/image.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/image.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/images.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/images.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,38 +96,38 @@
       <screen x="0" y="0" width="1280" height="690" />
     </state>
     <state x="372" y="95" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.690@0.0.1280.690" timestamp="1589533929105" />
-    <state width="1260" height="208" key="GridCell.Tab.0.bottom" timestamp="1589526370368">
+    <state width="1260" height="208" key="GridCell.Tab.0.bottom" timestamp="1589564871328">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1260" height="208" key="GridCell.Tab.0.bottom/0.0.1280.690@0.0.1280.690" timestamp="1589526370368" />
-    <state width="1260" height="208" key="GridCell.Tab.0.center" timestamp="1589526370368">
+    <state width="1260" height="208" key="GridCell.Tab.0.bottom/0.0.1280.690@0.0.1280.690" timestamp="1589564871328" />
+    <state width="1260" height="208" key="GridCell.Tab.0.center" timestamp="1589564871328">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1260" height="208" key="GridCell.Tab.0.center/0.0.1280.690@0.0.1280.690" timestamp="1589526370368" />
-    <state width="1260" height="208" key="GridCell.Tab.0.left" timestamp="1589526370367">
+    <state width="1260" height="208" key="GridCell.Tab.0.center/0.0.1280.690@0.0.1280.690" timestamp="1589564871328" />
+    <state width="1260" height="208" key="GridCell.Tab.0.left" timestamp="1589564871328">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1260" height="208" key="GridCell.Tab.0.left/0.0.1280.690@0.0.1280.690" timestamp="1589526370367" />
-    <state width="1260" height="208" key="GridCell.Tab.0.right" timestamp="1589526370368">
+    <state width="1260" height="208" key="GridCell.Tab.0.left/0.0.1280.690@0.0.1280.690" timestamp="1589564871328" />
+    <state width="1260" height="208" key="GridCell.Tab.0.right" timestamp="1589564871328">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1260" height="208" key="GridCell.Tab.0.right/0.0.1280.690@0.0.1280.690" timestamp="1589526370368" />
-    <state width="1260" height="208" key="GridCell.Tab.1.bottom" timestamp="1589526370368">
+    <state width="1260" height="208" key="GridCell.Tab.0.right/0.0.1280.690@0.0.1280.690" timestamp="1589564871328" />
+    <state width="1260" height="208" key="GridCell.Tab.1.bottom" timestamp="1589564871329">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1260" height="208" key="GridCell.Tab.1.bottom/0.0.1280.690@0.0.1280.690" timestamp="1589526370368" />
-    <state width="1260" height="208" key="GridCell.Tab.1.center" timestamp="1589526370368">
+    <state width="1260" height="208" key="GridCell.Tab.1.bottom/0.0.1280.690@0.0.1280.690" timestamp="1589564871329" />
+    <state width="1260" height="208" key="GridCell.Tab.1.center" timestamp="1589564871328">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1260" height="208" key="GridCell.Tab.1.center/0.0.1280.690@0.0.1280.690" timestamp="1589526370368" />
-    <state width="1260" height="208" key="GridCell.Tab.1.left" timestamp="1589526370368">
+    <state width="1260" height="208" key="GridCell.Tab.1.center/0.0.1280.690@0.0.1280.690" timestamp="1589564871328" />
+    <state width="1260" height="208" key="GridCell.Tab.1.left" timestamp="1589564871328">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1260" height="208" key="GridCell.Tab.1.left/0.0.1280.690@0.0.1280.690" timestamp="1589526370368" />
-    <state width="1260" height="208" key="GridCell.Tab.1.right" timestamp="1589526370368">
+    <state width="1260" height="208" key="GridCell.Tab.1.left/0.0.1280.690@0.0.1280.690" timestamp="1589564871328" />
+    <state width="1260" height="208" key="GridCell.Tab.1.right" timestamp="1589564871328">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state width="1260" height="208" key="GridCell.Tab.1.right/0.0.1280.690@0.0.1280.690" timestamp="1589526370368" />
+    <state width="1260" height="208" key="GridCell.Tab.1.right/0.0.1280.690@0.0.1280.690" timestamp="1589564871328" />
     <state x="313" y="58" key="RollbackChangesDialog" timestamp="1589295553101">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
@@ -138,9 +136,9 @@
       <screen x="0" y="0" width="1280" height="690" />
     </state>
     <state x="158" y="0" key="SettingsEditor/0.0.1280.690@0.0.1280.690" timestamp="1589547262481" />
-    <state x="135" y="169" key="com.intellij.ide.util.TipDialog" timestamp="1589508659536">
+    <state x="135" y="169" key="com.intellij.ide.util.TipDialog" timestamp="1589601580096">
       <screen x="0" y="0" width="1280" height="690" />
     </state>
-    <state x="135" y="169" key="com.intellij.ide.util.TipDialog/0.0.1280.690@0.0.1280.690" timestamp="1589508659536" />
+    <state x="135" y="169" key="com.intellij.ide.util.TipDialog/0.0.1280.690@0.0.1280.690" timestamp="1589601580096" />
   </component>
 </project>

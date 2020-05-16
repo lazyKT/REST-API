@@ -15,7 +15,7 @@ from resources.users import (UserRegister, User, UserLogin,
                              TokenRefresh, UserLogout, UserList, ChangePassword)
 from resources.songs import Song, SongList
 from resources.genres import Genre, GenreList
-from resources.images import ImageUpload, Image
+from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
 
 app = Flask(__name__)
@@ -121,6 +121,8 @@ api.add_resource(UserList, '/users')
 api.add_resource(ChangePassword, '/changepwd/<int:_id>')
 api.add_resource(ImageUpload, "/upload/image")
 api.add_resource(Image, "/img/<string:filename>")
+api.add_resource(AvatarUpload, "/upload/avatar")
+api.add_resource(Avatar, "/avatar/<int:_id_>")
 
 # Main Program Here __main__
 if __name__ == '__main__':

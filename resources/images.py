@@ -3,7 +3,7 @@ import traceback
 from flask_restful import Resource
 from flask_uploads import UploadNotAllowed
 from flask import request, send_file
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt_claims
 
 from lib import image_helper
 from schemas.image import ImageSchema
@@ -12,8 +12,10 @@ image_schema = ImageSchema()
 
 
 class ImageUpload(Resource):
+
+    @classmethod
     @jwt_required
-    def post(self):
+    def post(cls):
         data = image_schema.load(request.files)  # type(request.files) => dict
         user_id = get_jwt_identity()
         folder = f"user_{user_id}"
@@ -27,8 +29,9 @@ class ImageUpload(Resource):
 
 
 class Image(Resource):
+    @classmethod
     @jwt_required
-    def get(self, filename):
+    def get(cls, filename):
         """Return the image if it exists. Users can only access their uploaded images, not others"""
         user_id = get_jwt_identity()
         folder = f"user_{user_id}"
@@ -41,8 +44,9 @@ class Image(Resource):
         except FileNotFoundError:
             return {"message": "Image File, '{}' not Found!!".format(filename)}, 404
 
+    @classmethod
     @jwt_required
-    def delete(self, filename):
+    def delete(cls, filename):
         user_id = get_jwt_identity()
         folder = f"user_{user_id}"
         if not image_helper.is_filename_safe(filename):
@@ -56,3 +60,43 @@ class Image(Resource):
         except:
             traceback.print_exc()
             return {'msg': "Internal Server Error. Delete Request Failed!"}, 500
+
+
+class AvatarUpload(Resource):
+    @classmethod
+    @jwt_required
+    def put(cls):
+        data = image_schema.load(request.files)
+        user_id = get_jwt_identity()
+        filename = f"user_{user_id}"
+        folder = "avatars"
+        avatar_path = image_helper.find_image_any_format(filename, folder)
+        if avatar_path:
+            try:
+                os.remove(avatar_path)
+            except:
+                return {'msg': "Internal Server Error. Request Failed!"}, 500
+        ext = image_helper.get_extension(data["image"].filename)
+        try:
+            avatar = filename+ext
+            avatar_path = image_helper.save_image(data["image"], folder=folder, name=avatar)
+            basename = image_helper.get_basename(avatar_path)
+            return {'msg': "Avatar, '{}' Uploaded Successfully!".format(basename)}, 201
+        except UploadNotAllowed:
+            return {'msg': "Invalid File Format '{}' is not allowed!".format(ext)}, 400
+
+
+class Avatar(Resource):
+    @classmethod
+    @jwt_required
+    def get(cls, _id_):
+        user_id = get_jwt_identity()
+        # if not get_jwt_claims()["is_admin"] and user_id != _id_:
+        #     return {'msg': "Unauthorized Content"}, 401
+        folder = "avatars"
+        filename = f"user_{_id_}"
+        try:
+            avatar = image_helper.find_image_any_format(filename, folder)
+            return send_file(avatar)
+        except FileNotFoundError:
+            return {'msg': "File Not Found!"}, 400
