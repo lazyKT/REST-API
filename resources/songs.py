@@ -1,10 +1,7 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 from flask_jwt_extended import (
     jwt_required,
-    get_jwt_claims,
-    jwt_optional,
-    get_jwt_identity,
-    fresh_jwt_required
+    get_jwt_claims
 )
 from flask import request
 from marshmallow import ValidationError
@@ -79,4 +76,3 @@ class SongList(Resource):
             return err.messages, 400
         except:
             return {'msg': "Error Performing Request!"}, 500
-

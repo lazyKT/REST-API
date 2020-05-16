@@ -1,4 +1,3 @@
-import os
 from dotenv import load_dotenv
 
 from flask_restful import Api
@@ -88,7 +87,7 @@ def invalid_token_callback(error):
 def missing_token_callback(error):
     return jsonify({
         'msg': "Missing Valid Token!!",
-        'error': "missing_token"
+        'error': error
     }), 401
 
 
