@@ -110,16 +110,6 @@ class UserLogin(Resource):
         return {'msg': "Invalid Credentials!!!"}, 401
 
 
-class UserLogout(Resource):
-
-    @classmethod
-    @jwt_required
-    def post(cls):
-        jti = get_raw_jwt()['jti']  # !!! jti = JWT ID
-        UserModel.BLACKLIST.add(jti)  # Add the user_id to be revoked for logout
-        return {'msg': "Successfully Logged Out!!"}, 200
-
-
 class TokenRefresh(Resource):
 
     @classmethod
@@ -154,6 +144,16 @@ class ChangePassword(Resource):
             return {'msg': "Password has been changed!"}, 200
         else:
             return {'msg': "User Not Found!!"}, 404
+
+
+class UserLogout(Resource):
+    @classmethod
+    @jwt_required
+    def post(cls):
+        print("Logout----------------------")
+        jti = get_raw_jwt()['jti']  # !!! jti = JWT ID
+        UserModel.BLACKLIST.add(jti)  # Add the user_id to be revoked for logout
+        return {'msg': "Successfully Logged Out!!"}, 200
 
 
 class UserList(Resource):

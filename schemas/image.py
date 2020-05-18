@@ -20,4 +20,4 @@ class FileStorageField(fields.Field):
 
 
 class ImageSchema(Schema):
-    image = FileStorageField(required=True)
+    image = FileStorageField(required=False)

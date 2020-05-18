@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 import traceback
 from flask_restful import Resource
 from flask_uploads import UploadNotAllowed
@@ -78,7 +79,7 @@ class AvatarUpload(Resource):
                 return {'msg': "Internal Server Error. Request Failed!"}, 500
         ext = image_helper.get_extension(data["image"].filename)
         try:
-            avatar = filename+".png"
+            avatar = filename+ext
             avatar_path = image_helper.save_image(data["image"], folder=folder, name=avatar)
             basename = image_helper.get_basename(avatar_path)
             return {'msg': "Avatar, '{}' Uploaded Successfully!".format(basename)}, 201
@@ -88,15 +89,10 @@ class AvatarUpload(Resource):
 
 class Avatar(Resource):
     @classmethod
-    @jwt_required
     def get(cls, _id_):
-        user_id = get_jwt_identity()
-        if not get_jwt_claims()["is_admin"] and user_id != _id_:
-            return {'msg': "Unauthorized Content"}, 401
         folder = "avatars"
-        filename = f"user_{_id_}"
+        filename = f"user_2"
         try:
-            avatar = image_helper.find_image_any_format(filename, folder)
-            return send_file(avatar)
-        except FileNotFoundError:
+            return send_file(image_helper.find_image_any_format(filename, folder))
+        except:
             return {'msg': "File Not Found!"}, 400

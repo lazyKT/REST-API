@@ -17,11 +17,19 @@ def get_path(filename, folder):
     return IMAGE_SET.path(filename, folder)
 
 
+def getFileName(keyword):
+    path = r"C:\Users\9380-85615SG\Desktop\StudyMaterials\Programming\Python\PyCharmProjects\API\static\images\avatars"
+    for f in os.listdir(path):
+        if keyword in f:
+            print(f)
+
+
 def find_image_any_format(filename, folder):
     """Take a filename and return image of any accepted format"""
     for _format in IMAGES:
         image = f"{filename}.{_format}"
         image_path = IMAGE_SET.path(filename=image, folder=folder)
+        # getFileName('user_2')
         if os.path.isfile(image_path):
             return image_path
     return None
