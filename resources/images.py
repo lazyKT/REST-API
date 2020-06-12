@@ -64,22 +64,33 @@ class Image(Resource):
 
 
 class AvatarUpload(Resource):
+
+    # Upload/Change User Profile Avatar
+    """ 
+        Upload : A new image will be uploaded and saved to the destination with file name (eg: user_1.png).
+        Change : A newly uploaded avartar will overwrite the existing old profile avatar with same file name.
+        File name : For example. user_1.png
+    """
     @classmethod
     @jwt_required
     def put(cls):
         data = image_schema.load(request.files)
         user_id = get_jwt_identity()
-        filename = f"user_{user_id}"
+        filename = f"user_{user_id}"   # !!! eg: user_{user_id}
         folder = "avatars"
         avatar_path = image_helper.find_image_any_format(filename, folder)
+        # Check if the file exists
         if avatar_path:
             try:
+                # Delete the old profile avatar so that a new avatar can be saved with same name
                 os.remove(avatar_path)
             except:
                 return {'msg': "Internal Server Error. Request Failed!"}, 500
+        # !!! get the file extention from the requests
         ext = image_helper.get_extension(data["image"].filename)
         try:
-            avatar = filename+ext
+            avatar = filename+ext  # user_{id}.ext
+            # !!! save the new avatar
             avatar_path = image_helper.save_image(data["image"], folder=folder, name=avatar)
             basename = image_helper.get_basename(avatar_path)
             return {'msg': "Avatar, '{}' Uploaded Successfully!".format(basename)}, 201
@@ -88,10 +99,11 @@ class AvatarUpload(Resource):
 
 
 class Avatar(Resource):
+    # Return the user avatar by the User ID
     @classmethod
     def get(cls, _id_):
         folder = "avatars"
-        filename = f"user_2"
+        filename = f"user_{_id_}"  # user_{user_id}.ext
         try:
             return send_file(image_helper.find_image_any_format(filename, folder))
         except:

@@ -18,11 +18,11 @@ from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
 
 app = Flask(__name__)
-load_dotenv(".env", verbose=True)
-app.config.from_object("default_config")
+load_dotenv(".env", verbose=True) # Load the App Parameters and Const from .env
+app.config.from_object("default_config") 
 app.config.from_envvar("APPLICATION_SETTINGS")
 patch_request_class(app, 16 * 1024 * 1024)  # 16mb max size
-configure_uploads(app, IMAGE_SET)
+configure_uploads(app, IMAGE_SET) # Load Configurations for the upload media
 api = Api(app)
 CORS(app)
 
@@ -47,6 +47,7 @@ def about():
     return render_template('about.html')
 
 
+# Initialise JWT with app configuration
 jwt = JWTManager(app)
 
 
@@ -107,6 +108,7 @@ def revoked_token():
     }), 401
 
 
+# Routes and Resources
 api.add_resource(Song, '/songs/<int:_id_>')
 api.add_resource(SongList, '/songs')
 api.add_resource(Genre, '/genre/<int:_id>')
@@ -118,10 +120,10 @@ api.add_resource(TokenRefresh, '/refresh')
 api.add_resource(UserLogout, '/logout')
 api.add_resource(UserList, '/users')
 api.add_resource(ChangePassword, '/changepwd/<int:_id>')
-api.add_resource(ImageUpload, "/upload/image")
-api.add_resource(Image, "/img/<string:filename>")
-api.add_resource(AvatarUpload, "/upload/avatar")
-api.add_resource(Avatar, "/avatar/<int:_id_>")
+api.add_resource(ImageUpload, "/upload/image") # Upload Image
+api.add_resource(Image, "/img/<string:filename>") # Fetch Uploaded Image by Name
+api.add_resource(AvatarUpload, "/upload/avatar") # Upload User Profile Avatar
+api.add_resource(Avatar, "/avatar/<int:_id_>") # Fetch User Profile Avatar by User ID
 
 # Main Program Here __main__
 if __name__ == '__main__':

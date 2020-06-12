@@ -16,6 +16,7 @@ flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
 python-dotenv = "*"
 flask-uploads = "*"
+pipfile = "*"
 
 [requires]
 python_version = "3.8"
