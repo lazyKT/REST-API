@@ -4,6 +4,8 @@ from flask_restful import Api
 from flask import Flask, render_template, jsonify
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+# !!! Werkzeug import in flask_uploads has been updated
+# !!! import Secure_filename from werkzeug.utils and FileStorage from werkzeug.datastructures
 from flask_uploads import configure_uploads, patch_request_class
 
 from db import db
