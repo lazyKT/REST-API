@@ -3,7 +3,7 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_claims
 )
-from flask import request
+from flask import request, send_file
 from marshmallow import ValidationError
 from schemas.songs import SongSchema
 from models.songs import SongModel
@@ -95,4 +95,16 @@ def add_song(req, task_id="1234test"):
         except:
             return "Error on SongModel Instance", 500
     return f"No Genre found related to {req['genre_id']}"
-        
+
+
+"""
+: This is a helper function for the route "/listen/<song_id>".
+: This function takes song id as an input parameter and return the mp3 file name related to the song
+"""
+def get_song_resource(song_id):
+    song = SongModel.find_by_id(song_id)
+    if song:
+        song_url = song.url
+        song_name = song_url.split("=")[1]
+        return song_name
+    return "Song Not Exists"

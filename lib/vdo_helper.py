@@ -23,3 +23,18 @@ def convert_mp3(url):
             ydl.download([url])
     except Exception as e:
         print(e)
+
+
+"""
+: This is a helper function for the '/listen/<song>' route.
+: This function simply returns the audio file(mp3) which matches the <song> in url.
+: Before returning anything, the function checks the existence of the audio file in targeted folder.
+"""
+def find_file(file):
+    folder = "audios"
+    target_folder = os.path.join("static", folder)
+    mp3_path = os.path.join(target_folder, f"{file}.mp3")
+    # !!! Check mp3 file path is valid and does exist, return the path of mp3 file
+    if os.path.isfile(mp3_path):
+        return mp3_path
+    return None

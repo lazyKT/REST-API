@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from celery import Celery
 
 from flask_restful import Api
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_file
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 # !!! Werkzeug import in flask_uploads has been updated
@@ -15,11 +15,11 @@ import models.genre as genre
 from models.users import UserModel
 from resources.users import (UserRegister, User, UserLogin,
                              TokenRefresh, UserLogout, UserList, ChangePassword)
-from resources.songs import Song, SongList, add_song
+from resources.songs import Song, SongList, add_song, get_song_resource
 from resources.genres import Genre, GenreList
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
-from lib.vdo_helper import convert_mp3
+from lib.vdo_helper import convert_mp3, find_file
 
 app = Flask(__name__)
 load_dotenv(".env", verbose=True) # Load the App Parameters and Const from .env
@@ -98,6 +98,21 @@ def process():
     convertion = task.delay(data['url'])
     result = add_song(data, convertion.id) # DB Operation
     return result
+
+"""
+: This route allows the client side to get the song to play.
+: The basic concept is that the client side request a song with song id. This function takes the song id as an input.
+: And it returns the actual mp3 file of the song.
+: If file exists, return status_code 200 along with the file_path for client-side to access.
+: If file doesn't exist, return status_code 404, with the message, "File Not Found"
+"""
+@app.route('/listen/<song_id>')
+def listen_song(song_id):
+    file_name = get_song_resource(song_id)
+    try:
+        return send_file(find_file(file_name))
+    except:
+        return {'msg' : "Song Not Found!!"}, 404
 
 
 @app.route('/about')
