@@ -1,7 +1,8 @@
 from dotenv import load_dotenv
+from celery import Celery
 
 from flask_restful import Api
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 # !!! Werkzeug import in flask_uploads has been updated
@@ -18,15 +19,38 @@ from resources.songs import Song, SongList
 from resources.genres import Genre, GenreList
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
+from lib.vdo_helper import convert_mp3
 
 app = Flask(__name__)
 load_dotenv(".env", verbose=True) # Load the App Parameters and Const from .env
 app.config.from_object("default_config") 
 app.config.from_envvar("APPLICATION_SETTINGS")
+
+# Celery Configuations
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'db+sqlite:///data.db'
+# app.config['CELERY_RESULT_DBURI'] = 'sqlite:///data.db'
+app.config['CELERY_TRACK_STARTED'] = True
+app.config['CELERY_SEND_EVENTS'] = True
+
+# Celery Initialization
+celery = Celery(app.name, 
+    broker=app.config['CELERY_BROKER_URL'],
+    backend=app.config['CELERY_RESULT_BACKEND'])
+celery.conf.update(app.config)
+
 patch_request_class(app, 16 * 1024 * 1024)  # 16mb max size
 configure_uploads(app, IMAGE_SET) # Load Configurations for the upload media
 api = Api(app)
 CORS(app)
+
+
+# Celery Task
+@celery.task
+def task(url):
+    print("Start Execution...")
+    convert_mp3(url)
+    print("Finished Execution...")
 
 
 # !!! Before the first request, as in very first start of the app, Create the REQUIRED DATABASE TABLES
@@ -39,9 +63,20 @@ def create_database_tables():
     app.logger.info(log_txt + result_txt + " Status Code - " + str(status_code))
 
 
+# static routes
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return "Hello Flask"
+
+
+@app.route('/process', methods=['GET','POST'])
+def process():
+    if request.method == 'GET':
+        return render_template('process.html')
+    if request.form['submit'] == 'Convert':
+        url = request.form['url']
+        result = task.delay(url)
+        return f"{url} with {result.id} has been sent to Celery!"
 
 
 @app.route('/about')

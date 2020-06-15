@@ -9,3 +9,5 @@ JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 JWT_BLACKLIST_ENABLED = True
 JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
 UPLOADED_IMAGES_DEST = os.path.join("static", "images")
+CELERY_RESULT_BACKEND="db+sqlite:///data.db"
+CELERY_BROKER_URL='redis://localhost:6379/0'

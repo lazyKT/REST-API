@@ -9,6 +9,7 @@ from schemas.songs import SongSchema
 from models.songs import SongModel
 from models.genre import GenreModel
 from __wrappers__ import is_admin
+from app import task
 
 song_schema = SongSchema()
 
@@ -68,6 +69,7 @@ class SongList(Resource):
             song_data = song_schema.load(request.get_json())
             genre = GenreModel.find_by_id(song_data['genre_id'])
             if genre:
+                convert = task.delay(song_data['url'])
                 new_song = SongModel(**song_data)
                 new_song.save_to_db()
                 return new_song.json(), 201

@@ -8,14 +8,16 @@ class SongModel(db.Model):
     # !!! Define database table for songs model #SQLAlchemy
     __tablename__ = "songs"
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80))
-    posted_by = db.Column(db.String(80))
-    url = db.Column(db.String(80))
+    task_id = db.Column(db.String(80)) # Celery task id
+    title = db.Column(db.String(80))  # given by user
+    posted_by = db.Column(db.String(80)) # user id
+    url = db.Column(db.String(80)) # url related to song: example: https://www.youtube.com/watch?v=hxwjT90i8Ys
 
     genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))  # Genre ID as an Foreign Key For Songs
     genre = db.relationship('GenreModel')  # !!! Join two tables, genres and songs
 
-    def __init__(self, title, posted_by,genre_id, url=""):
+    def __init__(self, task_id, title, posted_by,genre_id, url=""):
+        self.task_id = task_id
         self.title = title
         self.posted_by = posted_by
         self.url = url
