@@ -80,7 +80,8 @@ def process():
     #     add_song(request)
     #     return f"{url} with has been sent to Celery!"
     data = request.get_json()
-    result = add_song(data)
+    convertion = task.delay(data['url'])
+    result = add_song(data, convertion.id)
     return result
 
 
