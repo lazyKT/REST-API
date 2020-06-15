@@ -9,7 +9,6 @@ from schemas.songs import SongSchema
 from models.songs import SongModel
 from models.genre import GenreModel
 from __wrappers__ import is_admin
-from app import task
 
 song_schema = SongSchema()
 
@@ -69,7 +68,6 @@ class SongList(Resource):
             song_data = song_schema.load(request.get_json())
             genre = GenreModel.find_by_id(song_data['genre_id'])
             if genre:
-                convert = task.delay(song_data['url'])
                 new_song = SongModel(**song_data)
                 new_song.save_to_db()
                 return new_song.json(), 201
@@ -78,3 +76,19 @@ class SongList(Resource):
             return err.messages, 400
         except:
             return {'msg': "Error Performing Request!"}, 500
+
+
+# Normal function, not a resource
+def add_song(req, task_id="1234test"):
+    print(req)
+    req.update({'task_id': task_id})
+    genre = GenreModel.find_by_id(req['genre_id'])
+    if genre:
+        try:
+            new_song = SongModel(task_id, req['title'], req['posted_by'], req['genre_id'], req['url'])
+            new_song.save_to_db()
+            return new_song.json(), 201
+        except:
+            return "Error on SongModel Instance", 500
+    return f"No Genre found related to {req['genre_id']}"
+        

@@ -15,7 +15,7 @@ import models.genre as genre
 from models.users import UserModel
 from resources.users import (UserRegister, User, UserLogin,
                              TokenRefresh, UserLogout, UserList, ChangePassword)
-from resources.songs import Song, SongList
+from resources.songs import Song, SongList, add_song
 from resources.genres import Genre, GenreList
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
@@ -51,6 +51,7 @@ def task(url):
     print("Start Execution...")
     convert_mp3(url)
     print("Finished Execution...")
+    return url.split('=')[1]
 
 
 # !!! Before the first request, as in very first start of the app, Create the REQUIRED DATABASE TABLES
@@ -73,10 +74,14 @@ def index():
 def process():
     if request.method == 'GET':
         return render_template('process.html')
-    if request.form['submit'] == 'Convert':
-        url = request.form['url']
-        result = task.delay(url)
-        return f"{url} with {result.id} has been sent to Celery!"
+    # if request.form['submit'] == 'Convert':
+    #     url = request.form['url']
+    #     # result = task.delay(url)
+    #     add_song(request)
+    #     return f"{url} with has been sent to Celery!"
+    data = request.get_json()
+    result = add_song(data)
+    return result
 
 
 @app.route('/about')

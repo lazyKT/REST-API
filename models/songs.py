@@ -16,7 +16,7 @@ class SongModel(db.Model):
     genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))  # Genre ID as an Foreign Key For Songs
     genre = db.relationship('GenreModel')  # !!! Join two tables, genres and songs
 
-    def __init__(self, task_id, title, posted_by,genre_id, url=""):
+    def __init__(self, task_id, title, posted_by,genre_id, url):
         self.task_id = task_id
         self.title = title
         self.posted_by = posted_by
@@ -28,7 +28,7 @@ class SongModel(db.Model):
         return {
             'id': self.id,
             'title': self.title,
-            'posted_by': UserModel.find_by_id(self.posted_by).username,
+            # 'posted_by': UserModel.find_by_id(self.posted_by).username,
             'genre': GenreModel.find_by_id(self.genre_id).name
         }
 
