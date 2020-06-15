@@ -45,13 +45,23 @@ api = Api(app)
 CORS(app)
 
 
-# Celery Task
+"""
+: ! Celery task which will be executed by redis worker
+: This function takes a video-url (youtube) and convert the video into mp3
+: The function only accepts Youtube Url
+: To reduce the overhead on the server, playlists url are not allowed to pass in
+: For the conversion of multiple videos, his function must be execute multiple times.
+: If non-youtube or invalid url has been passed, it will not perform any conversion process-
+: straight away return "Invalid URL"
+"""
 @celery.task
 def task(url):
-    print("Start Execution...")
-    convert_mp3(url)
-    print("Finished Execution...")
-    return url.split('=')[1]
+    if 'youtube.com' in url and '=' in url:
+        print("Start Execution...")
+        convert_mp3(url)
+        print("Finished Execution...")
+        return url.split('=')[1]
+    return "Invalid Url"
 
 
 # !!! Before the first request, as in very first start of the app, Create the REQUIRED DATABASE TABLES
@@ -69,19 +79,24 @@ def create_database_tables():
 def index():
     return "Hello Flask"
 
-
+"""
+: This is helper route to convert the Youtube Video to MP3 with the help of Youtube_dl.
+: The process function takes the Request object from user and perform the convertion of video to mp3
+: To prevent unnecessary delay and overhead on Server, the convertion process will be executed on different thread.
+: The process will be handed over to redis worker for Execution, with the help of Celery.
+: This function will not wait the execution of CONVERTION process. 
+: The function will response back to user just after it has sent the CONVERTION task to redis worker
+: In order to perform an operation with this route, 
+: SSL Certificate must be installed and updated: $ pip install --upgrade Certi
+: Ffmpeg must be installed. Learn more about ffmpeg @  https://www.ffmpeg.org/about.html
+"""
 @app.route('/process', methods=['GET','POST'])
 def process():
     if request.method == 'GET':
         return render_template('process.html')
-    # if request.form['submit'] == 'Convert':
-    #     url = request.form['url']
-    #     # result = task.delay(url)
-    #     add_song(request)
-    #     return f"{url} with has been sent to Celery!"
     data = request.get_json()
     convertion = task.delay(data['url'])
-    result = add_song(data, convertion.id)
+    result = add_song(data, convertion.id) # DB Operation
     return result
 
 

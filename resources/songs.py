@@ -78,13 +78,17 @@ class SongList(Resource):
             return {'msg': "Error Performing Request!"}, 500
 
 
-# Normal function, not a resource
+"""
+ ! : This is a helper function for the DB Operation of /process route.
+ : After the convertion process has been passed to redis worker, this function will be executed
+ : Take the task id from redis worker and save the task_id along with the requests obj in DB
+"""
 def add_song(req, task_id="1234test"):
-    print(req)
-    req.update({'task_id': task_id})
+    # Check genre_id in request, if exists, proceed to DB Operation
     genre = GenreModel.find_by_id(req['genre_id'])
     if genre:
         try:
+            # Save song info into DB
             new_song = SongModel(task_id, req['title'], req['posted_by'], req['genre_id'], req['url'])
             new_song.save_to_db()
             return new_song.json(), 201
