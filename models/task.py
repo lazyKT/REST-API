@@ -22,10 +22,11 @@ session = Session(engine)
 """
 : This is a helper function to check the status of the task.
 : This function returns the first row(result) of the query.
+: Check tasks by task_id
 """
 def get_status(_id_):
     return session.query(Tasks).filter_by(task_id = _id_).first()
 
-
+# get task by id
 def find_by_id(_id_):
     return session.query(Tasks).filter_by(id = _id_).first()

@@ -55,81 +55,6 @@ def create_database_tables():
     app.logger.info(log_txt + result_txt + " Status Code - " + str(status_code))
 
 
-"""
-: ! Celery task which will be executed by redis worker
-: This function takes a video-url (youtube) and convert the video into mp3
-: The function only accepts Youtube Url
-: To reduce the overhead on the server, playlists url are not allowed to pass in
-: For the conversion of multiple videos, his function must be execute multiple times.
-: If non-youtube or invalid url has been passed, it will not perform any conversion process-
-: straight away return "Invalid URL"
-"""
-@celery.task
-def task(url):
-    if 'youtube.com' in url and '=' in url:
-        print("Start Execution...")
-        convert_mp3(url)
-        print("Finished Execution...")
-        return url.split('=')[1]
-    return "Invalid Url"
-
-
-# static routes
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-"""
-: This is helper route to convert the Youtube Video to MP3 with the help of Youtube_dl.
-: The process function takes the Request object from user and perform the convertion of video to mp3
-: To prevent unnecessary delay and overhead on Server, the convertion process will be executed on different thread.
-: The process will be handed over to redis worker for Execution, with the help of Celery.
-: This function will not wait the execution of CONVERTION process. 
-: The function will response back to user just after it has sent the CONVERTION task to redis worker
-: In order to perform an operation with this route, 
-: SSL Certificate must be installed and updated: $ pip install --upgrade Certi
-: Ffmpeg must be installed. Learn more about ffmpeg @  https://www.ffmpeg.org/about.html
-"""
-@app.route('/process', methods=['GET','POST'])
-def process():
-    if request.method == 'GET':
-        return render_template('process.html')
-    data = request.get_json()
-    convertion = task.delay(data['url'])
-    result = add_song(data, convertion.id) # DB Operation
-    return result
-
-"""
-: This route allows the client side to get the song to play.
-: The basic concept is that the client side request a song with song id. This function takes the song id as an input.
-: And it returns the actual mp3 file of the song.
-: If file exists, return status_code 200 along with the file_path for client-side to access.
-: If file doesn't exist, return status_code 404, with the message, "File Not Found"
-"""
-@app.route('/listen/<song_id>')
-def listen_song(song_id):
-    file_name = get_song_resource(song_id)
-    try:
-        return send_file(find_file(file_name))
-    except:
-        return {'msg' : "Song Not Found!!"}, 404
-
-
-"""
-: This route allows the client-side to check the status of the convertion process
-; After the client-side has successfully post add-new-song request, it will check the status and updates of the convertion
-: The get_status function returns 3 responses. Each response at one time.
-: 201: Successful Convertion. 200: Task On-Progress. 500: Failure
-"""
-@app.route('/mp3Convert/status/<task_id>')
-def get_status(task_id):
-    return check_task_status(task_id)
-
-
 # Initialise JWT with app configuration
 jwt = JWTManager(app)
 
@@ -189,6 +114,85 @@ def revoked_token():
         'msg': "Token has been revoked",
         'error': "revoked_token"
     }), 401
+
+
+
+"""
+: ! Celery task which will be executed by redis worker
+: This function takes a video-url (youtube) and convert the video into mp3
+: The function only accepts Youtube Url
+: To reduce the overhead on the server, playlists url are not allowed to pass in
+: For the conversion of multiple videos, his function must be execute multiple times.
+: If non-youtube or invalid url has been passed, it will not perform any conversion process-
+: straight away return "Invalid URL"
+"""
+@celery.task
+def task(url):
+    if 'youtube.com' in url and '=' in url:
+        print("Start Execution...")
+        convert_mp3(url)
+        print("Finished Execution...")
+        return url.split('=')[1]
+    return "Invalid Url"
+
+
+# static routes
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+"""
+: This is helper route to convert the Youtube Video to MP3 with the help of Youtube_dl.
+: The process function takes the Request object from user and perform the convertion of video to mp3
+: To prevent unnecessary delay and overhead on Server, the convertion process will be executed on different thread.
+: The process will be handed over to redis worker for Execution, with the help of Celery.
+: This function will not wait the execution of CONVERTION process. 
+: The function will response back to user just after it has sent the CONVERTION task to redis worker
+: In order to perform an operation with this route, 
+: SSL Certificate must be installed and updated: $ pip install --upgrade Certi
+: Ffmpeg must be installed. Learn more about ffmpeg @  https://www.ffmpeg.org/about.html
+"""
+@app.route('/process', methods=['GET','POST'])
+def process():
+    if request.method == 'GET':
+        return render_template('process.html')
+    data = request.get_json()
+    url = data['url']
+    if "youtube.com" in url and "=" in url:
+        convertion = task.delay(data['url'])
+        result = add_song(data, convertion.id) # DB Operation
+        return result
+    return {'msg': "Invalid URL. Please check again!"}, 400
+
+"""
+: This route allows the client side to get the song to play.
+: The basic concept is that the client side request a song with song id. This function takes the song id as an input.
+: And it returns the actual mp3 file of the song.
+: If file exists, return status_code 200 along with the file_path for client-side to access.
+: If file doesn't exist, return status_code 404, with the message, "File Not Found"
+"""
+@app.route('/listen/<song_id>')
+def listen_song(song_id):
+    file_name = get_song_resource(song_id)
+    try:
+        return send_file(find_file(file_name))
+    except:
+        return {'msg' : "Song Not Found!!"}, 404
+
+
+"""
+: This route allows the client-side to check the status of the convertion process
+; After the client-side has successfully post add-new-song request, it will check the status and updates of the convertion
+: The get_status function returns 3 responses. Each response at one time.
+: 201: Successful Convertion. 200: Task On-Progress. 500: Failure
+"""
+@app.route('/mp3Convert/status/<task_id>')
+def get_status(task_id):
+    return check_task_status(task_id)
 
 
 # Routes and Resources
