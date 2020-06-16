@@ -23,8 +23,8 @@ class SongModel(db.Model):
         self.url = url
         self.genre_id = genre_id
 
-    # !!! This method is to convert the json into python dicts
-    def json(self):
+    """ : Callable Instance of SongModel Class """
+    def __call__(self):
         return {
             'id': self.id,
             'title': self.title,
@@ -32,10 +32,16 @@ class SongModel(db.Model):
             'url': self.url,
             'genre': GenreModel.find_by_id(self.genre_id).name
         }
-
+        
     @classmethod
     def find_by_id(cls, _id_):
         return cls.query.filter_by(id=_id_).first()  # same: SELECT * FROM songs WHERE id = _id_ LIMIT 1
+
+    # !!! : Get a song by url. 
+    # : first() means that the query will return only the first result no matter how many results availbel
+    @classmethod
+    def find_by_url(cls, url):
+        return cls.query.filter_by(url = url).first()
 
     # !!! the insert and update method is just to 
     # !!! insert (or) update the data into Song Model,

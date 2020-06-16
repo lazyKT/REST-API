@@ -15,7 +15,7 @@ import models.genre as genre
 from models.users import UserModel
 from resources.users import (UserRegister, User, UserLogin,
                              TokenRefresh, UserLogout, UserList, ChangePassword)
-from resources.songs import Song, SongList, add_song, get_song_resource
+from resources.songs import Song, SongList, add_song, get_song_resource, check_task_status
 from resources.genres import Genre, GenreList
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
@@ -45,6 +45,16 @@ api = Api(app)
 CORS(app)
 
 
+# !!! Before the first request, as in very first start of the app, Create the REQUIRED DATABASE TABLES
+@app.before_first_request
+def create_database_tables():
+    db.create_all()
+    status_code = genre.import_data_from_json()
+    log_txt = 'Data Initialization Finished! '
+    result_txt = 'Data Created! -' if status_code == 0 else 'Data Already Existed!'
+    app.logger.info(log_txt + result_txt + " Status Code - " + str(status_code))
+
+
 """
 : ! Celery task which will be executed by redis worker
 : This function takes a video-url (youtube) and convert the video into mp3
@@ -64,20 +74,14 @@ def task(url):
     return "Invalid Url"
 
 
-# !!! Before the first request, as in very first start of the app, Create the REQUIRED DATABASE TABLES
-@app.before_first_request
-def create_database_tables():
-    db.create_all()
-    status_code = genre.import_data_from_json()
-    log_txt = 'Data Initialization Finished! '
-    result_txt = 'Data Created! -' if status_code == 0 else 'Data Already Existed!'
-    app.logger.info(log_txt + result_txt + " Status Code - " + str(status_code))
-
-
 # static routes
 @app.route('/')
 def index():
-    return "Hello Flask"
+    return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 """
 : This is helper route to convert the Youtube Video to MP3 with the help of Youtube_dl.
@@ -115,9 +119,15 @@ def listen_song(song_id):
         return {'msg' : "Song Not Found!!"}, 404
 
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
+"""
+: This route allows the client-side to check the status of the convertion process
+; After the client-side has successfully post add-new-song request, it will check the status and updates of the convertion
+: The get_status function returns 3 responses. Each response at one time.
+: 201: Successful Convertion. 200: Task On-Progress. 500: Failure
+"""
+@app.route('/mp3Convert/status/<task_id>')
+def get_status(task_id):
+    return check_task_status(task_id)
 
 
 # Initialise JWT with app configuration
