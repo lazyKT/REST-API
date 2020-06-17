@@ -5,3 +5,4 @@ uwsgi.ini
 genres.json
 .env
 static/images
+sendgrid.env

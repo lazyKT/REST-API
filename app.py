@@ -8,6 +8,7 @@ from flask_cors import CORS
 # !!! Werkzeug import in flask_uploads has been updated
 # !!! import Secure_filename from werkzeug.utils and FileStorage from werkzeug.datastructures
 from flask_uploads import configure_uploads, patch_request_class
+from flask_mail import Mail, Message
 
 from db import db
 from marsh import marsh
@@ -44,6 +45,13 @@ configure_uploads(app, IMAGE_SET) # Load Configurations for the upload media
 api = Api(app)
 CORS(app)
 
+# : Flask-mail Initialization
+mail = Mail(app)
+
+# Initialise JWT with app configuration
+jwt = JWTManager(app)
+
+
 
 # !!! Before the first request, as in very first start of the app, Create the REQUIRED DATABASE TABLES
 @app.before_first_request
@@ -55,10 +63,10 @@ def create_database_tables():
     app.logger.info(log_txt + result_txt + " Status Code - " + str(status_code))
 
 
-# Initialise JWT with app configuration
-jwt = JWTManager(app)
 
-
+"""
+: JWT Tokens Responses and Handlers
+"""
 @jwt.user_claims_loader
 def add_claims_to_jwt(identity):  # !!! identity comes from access_token
     user = UserModel.find_by_id(identity)
