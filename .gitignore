@@ -6,3 +6,5 @@ genres.json
 .env
 static/images
 sendgrid.env
+sendgrid.env
+.env

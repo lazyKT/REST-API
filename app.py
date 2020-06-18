@@ -8,7 +8,6 @@ from flask_cors import CORS
 # !!! Werkzeug import in flask_uploads has been updated
 # !!! import Secure_filename from werkzeug.utils and FileStorage from werkzeug.datastructures
 from flask_uploads import configure_uploads, patch_request_class
-from flask_mail import Mail, Message
 
 from db import db
 from marsh import marsh
@@ -44,9 +43,6 @@ patch_request_class(app, 16 * 1024 * 1024)  # 16mb max size
 configure_uploads(app, IMAGE_SET) # Load Configurations for the upload media
 api = Api(app)
 CORS(app)
-
-# : Flask-mail Initialization
-mail = Mail(app)
 
 # Initialise JWT with app configuration
 jwt = JWTManager(app)
