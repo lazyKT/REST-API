@@ -8,7 +8,6 @@ from marshmallow import ValidationError
 from schemas.songs import SongSchema
 from models.songs import SongModel
 from models.genre import GenreModel
-from models.task import get_status
 from __wrappers__ import is_admin
 
 song_schema = SongSchema()
@@ -124,11 +123,15 @@ def get_song_resource(song_id):
 : If error: reponse 500. If success: response 201. If task not found, response "on-progress": 200
 """
 def check_task_status(task_id):
-    task = get_status(task_id)
-    print(task)
-    if task:
-        if task.status == "SUCCESS":
-            return {'msg': "Your song is ready to play!"}, 201
-        else:
-            return {'msg': "Error Processing Request!"}, 500
-    return {'msg': "On-Progress"}, 200
+    try:
+        from models.task import get_status
+        task = get_status(task_id)
+        print(task)
+        if task:
+            if task.status == "SUCCESS":
+                return {'msg': "Your song is ready to play!"}, 201
+            else:
+                return {'msg': "Error Processing Request!"}, 500
+        return {'msg': "On-Progress"}, 200
+    except:
+        return {'msg': "Error! Requested Resource Not Available!"}, 400

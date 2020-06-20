@@ -3,6 +3,8 @@ from db import db
 import hashlib
 import os
 import uuid
+from lib.email_helper import send
+from flask import url_for, request
 
 # !!! This is a helper class to simplify the db operations
 """
@@ -24,6 +26,7 @@ class UserModel(db.Model):
     username = db.Column(db.String)
     password = db.Column(db.String)
     role = db.Column(db.String)
+    status = db.Column(db.String)
     createdOn = db.Column(db.String)
     updatedOn = db.Column(db.String)
 
@@ -37,6 +40,7 @@ class UserModel(db.Model):
         self.password = hashed_pwd
         self.user_id = str(uuid.uuid1())
         self.role = role
+        self.status = 'InAcitve'
         self.createdOn = datetime.strftime(current_time, '%m/%d/%y %H:%M:%S')
         self.updatedOn = datetime.strftime(current_time, '%m/%d/%y %H:%M:%S')
 
@@ -56,6 +60,28 @@ class UserModel(db.Model):
     def find_by_id(cls, _id):
         # same: "SELECT * FROM users WHERE id=_id"
         return cls.query.filter_by(id=_id).first()
+
+    def send_confirmation_email(self):
+        print("Send Confirmation Email")
+        activate_url = request.url_root[:-1] + f'/activate/{self.id}'
+        sender = os.environ.get('MAIL_DEFAULT_SENDER')
+        print("Send Email ______1")
+        subject = os.environ.get('USER_CREATED_SUBJECT')
+        print("credentials"+sender+" "+subject)
+        body = f"{os.environ.get('USER_CREATED_EMAIL')} Please click {activate_url} to activate your account."
+        print("Before Sent Email... " + self.email)
+        send(sender, self.email, subject, body)
+        # email = SENDEMAIL(sender, user['email'], subject, body)
+        print("Email instanciated")
+        # mail_result = email.send_message()
+        print("Mail Sent.....")
+    
+    @classmethod
+    def activate_account(cls, user_id):
+        user = cls.find_by_id(user_id)
+        user.status = 'Active'
+        db.session.commit()
+
 
     @classmethod
     def update(cls, _id, update_user):

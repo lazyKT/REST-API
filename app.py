@@ -15,7 +15,7 @@ import models.genre as genre
 from models.users import UserModel
 from resources.users import (UserRegister, User, UserLogin,
                              TokenRefresh, UserLogout, UserList, ChangePassword)
-from resources.songs import Song, SongList, add_song, get_song_resource, check_task_status
+from resources.songs import Song, SongList, add_song, get_song_resource
 from resources.genres import Genre, GenreList
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
@@ -196,7 +196,22 @@ def listen_song(song_id):
 """
 @app.route('/mp3Convert/status/<task_id>')
 def get_status(task_id):
-    return check_task_status(task_id)
+    try:
+        from resources.Song import check_task_status
+        return check_task_status(task_id)
+    except:
+        return {'msg': "Error! Requested Resources Not Available!"}, 400
+
+"""
+: This is a route for the user confirmation.
+: This route is sent to user's email address after succesful registeration.
+: Users must click this route in their email inbox to activate their account.
+: InActive users cannot be validated and cannot access the app.
+"""
+@app.route('/activate/<user_id>')
+def confirm_user(user_id):
+    UserModel.activate_account(user_id)
+    return render_template('activate.html')
 
 
 # Routes and Resources

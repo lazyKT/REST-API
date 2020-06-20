@@ -1,6 +1,6 @@
 import os
 from marshmallow import ValidationError
-from flask import request
+from flask import request, url_for
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -14,7 +14,6 @@ from flask_restful import Resource
 from models.users import UserModel, Hash_Password
 from schemas.user_schema import UserSchema
 from __wrappers__ import is_admin
-from test import send
 
 user_schema = UserSchema()
 
@@ -28,26 +27,17 @@ class UserRegister(Resource):
         except ValidationError as err:
             return err.messages, 400
 
-        # if UserModel.find_by_username(user['username']):
-        #     return {"msg": "User Already Exists"}, 400
+        if UserModel.find_by_username(user['username']):
+            return {"msg": "User Already Exists"}, 400
 
-        # if UserModel.find_by_email(user['email']):
-        #     return {"msg": "This email already has a registered account."}, 400
+        if UserModel.find_by_email(user['email']):
+            return {"msg": "This email already has a registered account."}, 400
 
         new_user = UserModel(**request.get_json())
         try:
             new_user.register()
             print("User Registered...")
-            sender = os.environ.get('MAIL_DEFAULT_SENDER')
-            subject = os.environ.get('USER_CREATED_SUBJECT')
-            body = os.environ.get('USER_CREATED_EMAIL')
-            print(sender+" "+subject)
-            print("Before Sent Email...")
-            send(sender, user['email'], subject, body)
-            # email = SENDEMAIL(sender, user['email'], subject, body)
-            print("Email instanciated")
-            # mail_result = email.send_message()
-            print("Mail Sent.....")
+            new_user.send_confirmation_email()
         except:
             return {'msg': "Error Performing Request!!"}, 500
 

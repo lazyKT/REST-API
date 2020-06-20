@@ -9,5 +9,6 @@ class UserSchema(Schema):
     password = fields.Str(load_only=True)
     role = fields.Str()
     profile_pic = fields.Str()
+    status = fields.Str(dump_only=True)
     createdOn = fields.Str(dump_only=True)
     updatedOn = fields.Str(dump_only=True)
