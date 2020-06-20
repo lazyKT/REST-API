@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <title>Reset Password</title>
+        <style>
+            div {
+                background-color: salmon;
+                padding: 20px;
+                border-radius: 10px;
+                width: 40%;
+                height: fit-content;
+                margin: 5% auto;
+                font-family: monospace;
+            }
+            h3 {
+                color: darkblue;
+                width: fit-content;
+                margin: 20px auto;
+                font-size: 18px;
+            }
+            form {
+                width: 60%;
+                margin: 10px auto;
+                padding: 30px 20px;
+                border: lightblue solid 0.2px;
+                border-radius: 5px;
+            }
+            form .input{
+                display: block;
+                width: 100%;
+                margin: 10px auto;
+                line-height: 20px;
+                font-size: 15px;
+                border-radius: 5px;
+                border: darksalmon;
+                padding: 5px;
+            }
+            form .btn{
+                width: 40%;
+                height: 40px;
+                border: darksalmon;
+                border-radius: 5px;
+                font-size: 15px;
+                font-weight: bold;
+                color: darkblue;
+                margin: auto;
+                display: block;
+            }
+            form .btn:hover{
+                background-color: lightgray;
+            }
+            p {
+                display: inline;
+                font-size: 15px;
+                color: darkblue;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <h3>Reset Password</h3>
+            <form method="POST">
+                <p>New Password</p>
+                <input class="input" type="password" name="password" value="{{ password }}" required>
+                <p>Confirm Password</p>
+                <input class="input" type="password" name="confirm_pwd" value="{{ confirm_pwd }}" required>
+                <input class="btn" type="submit" name="reset" value="Reset">
+            </form>
+        </div>
+    </body>
+</html>

@@ -169,3 +169,14 @@ class UserList(Resource):
     @is_admin
     def get(cls):
         return {'users': [user_schema.dump(user) for user in UserModel.query.all()]}, 200
+
+"""
+: This is a helper function for the forget password route.
+: This function helps the reset the password of the given user_id
+"""
+def forget_password(user_id, password):
+    if not UserModel.find_by_id(user_id):
+        return {'msg': "Invalid User!!"}, 404
+    new_password = Hash_Password(password).hash_pwd()
+    UserModel.changePwd(user_id, new_password)
+    return {'msg': "Password has been Changed!"}, 200

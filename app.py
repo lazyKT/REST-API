@@ -14,7 +14,7 @@ from marsh import marsh
 import models.genre as genre
 from models.users import UserModel
 from resources.users import (UserRegister, User, UserLogin,
-                             TokenRefresh, UserLogout, UserList, ChangePassword)
+                             TokenRefresh, UserLogout, UserList, ChangePassword, forget_password)
 from resources.songs import Song, SongList, add_song, get_song_resource
 from resources.genres import Genre, GenreList
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
@@ -234,6 +234,19 @@ def deactivate_account(username):
     UserModel.deactivate_account(user.id)
     return {'msg': "Account Deactivated!"}, 200
 
+"""
+: Password Reset Link.
+: This route is the password reset link for users who forgot their passwords on Login Page
+: Users click 'Forgot Password?' link and the route link will be sent to their emails.
+"""
+@app.route('/reset-password/<user_id>', methods=['GET', 'POST'])
+def reset_password(user_id):
+    if request.method == 'GET':
+        return render_template('reset_pwd.html')
+    if request.form['reset'] == 'Reset':
+        password = request.form['password']
+
+        return forget_password(user_id, password)
 
 
 # Routes and Resources
