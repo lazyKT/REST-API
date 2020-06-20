@@ -61,21 +61,23 @@ class UserModel(db.Model):
         # same: "SELECT * FROM users WHERE id=_id"
         return cls.query.filter_by(id=_id).first()
 
+    """
+    : After the successful registeration of the account, an email linked to account activation has been sent to user's email address.
+    : User can only login after the account has been activated.
+    : This function simply perform the email delivery to the destinated user's email address using SENDGRID Twilio API.
+    """
     def send_confirmation_email(self):
         print("Send Confirmation Email")
         activate_url = request.url_root[:-1] + f'/activate/{self.id}'
-        sender = os.environ.get('MAIL_DEFAULT_SENDER')
-        print("Send Email ______1")
+        sender = os.environ.get('HOST_EMAIL')
         subject = os.environ.get('USER_CREATED_SUBJECT')
-        print("credentials"+sender+" "+subject)
         body = f"{os.environ.get('USER_CREATED_EMAIL')} Please click {activate_url} to activate your account."
-        print("Before Sent Email... " + self.email)
         send(sender, self.email, subject, body)
-        # email = SENDEMAIL(sender, user['email'], subject, body)
-        print("Email instanciated")
-        # mail_result = email.send_message()
-        print("Mail Sent.....")
     
+    """
+    : This is helper function for the route, '/activate/user_id'.
+    : This function does the activation of the inactive accounts by simply query the db row.
+    """
     @classmethod
     def activate_account(cls, user_id):
         user = cls.find_by_id(user_id)
