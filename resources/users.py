@@ -41,7 +41,7 @@ class UserRegister(Resource):
         except:
             return {'msg': "Error Performing Request!!"}, 500
 
-        return {'msg': user_schema.dump(new_user)}, 201
+        return {'msg': "Confirmation Link has been sent to you Email. Please Activate."}, 201
 
 
 class User(Resource):
@@ -95,7 +95,10 @@ class UserLogin(Resource):
         user = UserModel.find_by_username(data["username"])
 
         # !!! below is the same with the authentication used in JWT(app,authentication,identity)
+        # !!! Only the active user can log in.
         if user and Hash_Password.check_pwd(data["password"], user.password):
+            if user.status == 'InActive':
+                return {'msg': "Please Activate your account."}, 300
             # !!! identity= is the same with the identity used in JWT(app,authentication,identity)
             access_token = create_access_token(identity=user.id, fresh=True,
                                                expires_delta=False)  # !!! Create Token for authentication

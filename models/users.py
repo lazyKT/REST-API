@@ -40,7 +40,7 @@ class UserModel(db.Model):
         self.password = hashed_pwd
         self.user_id = str(uuid.uuid1())
         self.role = role
-        self.status = 'InAcitve'
+        self.status = 'InActive'
         self.createdOn = datetime.strftime(current_time, '%m/%d/%y %H:%M:%S')
         self.updatedOn = datetime.strftime(current_time, '%m/%d/%y %H:%M:%S')
 
