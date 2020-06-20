@@ -84,6 +84,16 @@ class UserModel(db.Model):
         user.status = 'Active'
         db.session.commit()
 
+    """
+    : This is a helper function for the deactivation of the account.
+    : This function performs the Database Query and mutate the row.
+    """
+    @classmethod
+    def deactivate_account(cls, user_id):
+        user = cls.find_by_id(user_id)
+        user.status = 'InActive'
+        db.session.commit()
+
 
     @classmethod
     def update(cls, _id, update_user):

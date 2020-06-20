@@ -97,7 +97,7 @@ class UserLogin(Resource):
         # !!! below is the same with the authentication used in JWT(app,authentication,identity)
         # !!! Only the active user can log in.
         if user and Hash_Password.check_pwd(data["password"], user.password):
-            if user.status == 'InActive':
+            if not user.status == 'Active':
                 return {'msg': "Please Activate your account."}, 300
             # !!! identity= is the same with the identity used in JWT(app,authentication,identity)
             access_token = create_access_token(identity=user.id, fresh=True,

@@ -214,6 +214,28 @@ def confirm_user(user_id):
     return render_template('activate.html')
 
 
+"""
+: This route is for the activation of the account for the deactivated users.
+: The deactivated users can refer to this route to re-activate their account with their email addresses.
+"""
+@app.route('/re-activate', methods=['POST'])
+def activate_account():
+    user = UserModel.find_by_email(request.get_json()['email'])
+    user.send_confirmation_email()
+    return {'msg': "An Activation Link has been sent to your email Address."}, 200
+
+"""
+: This is a route to deactivate the account.
+: Users can deactivate the account by sending this route.
+"""
+@app.route('/deactivate/<username>')
+def deactivate_account(username):
+    user = UserModel.find_by_username(username)
+    UserModel.deactivate_account(user.id)
+    return {'msg': "Account Deactivated!"}, 200
+
+
+
 # Routes and Resources
 api.add_resource(Song, '/songs/<int:_id_>')
 api.add_resource(SongList, '/songs')
