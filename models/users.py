@@ -75,6 +75,19 @@ class UserModel(db.Model):
         send(sender, self.email, subject, body)
     
     """
+    : This is a helper function for the users.password_forget(email) function.
+    : This function actually sends the pwd-rest-link to given email address.
+    """
+    @classmethod
+    def send_pwd_reset_link(cls, user_id, email):
+        print("Sending Password Reset Link")
+        link = request.url_root[:-1] + f'/reset-password/{user_id}'
+        sender = os.environ.get('HOST_EMAIL')
+        subject = os.environ.get('FORGET_PASSWORD_SUBJECT')
+        body = f"{os.environ.get('FORGET_PASSWORD_EMAIL')} Please click {link} to reset your password."
+        send(sender, email, subject, body)
+
+    """
     : This is helper function for the route, '/activate/user_id'.
     : This function does the activation of the inactive accounts by simply query the db row.
     """

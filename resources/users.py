@@ -170,11 +170,28 @@ class UserList(Resource):
     def get(cls):
         return {'users': [user_schema.dump(user) for user in UserModel.query.all()]}, 200
 
+
+"""
+: This is a helper function for the route, '/forget-password'
+: This function does the delivery of password reset link to the users' email address.
+"""
+def password_forget(email):
+    user = UserModel.find_by_email(email)
+    if user:
+        try:
+            print("request for password-reset")
+            UserModel.send_pwd_reset_link(user.id, email)
+            return {'msg', "A password reset link has been sent to your email."}
+        except:
+            return {'msg': "Internal Server Error. Error Sending Email Address."}, 500
+    return {'msg': 'User related to this email has not been found!'}
+
+
 """
 : This is a helper function for the forget password route.
 : This function helps the reset the password of the given user_id
 """
-def forget_password(user_id, password):
+def password_reset(user_id, password):
     if not UserModel.find_by_id(user_id):
         return {'msg': "Invalid User!!"}, 404
     new_password = Hash_Password(password).hash_pwd()

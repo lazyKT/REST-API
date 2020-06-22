@@ -14,7 +14,7 @@ from marsh import marsh
 import models.genre as genre
 from models.users import UserModel
 from resources.users import (UserRegister, User, UserLogin,
-                             TokenRefresh, UserLogout, UserList, ChangePassword, forget_password)
+                             TokenRefresh, UserLogout, UserList, ChangePassword, password_reset, password_forget)
 from resources.songs import Song, SongList, add_song, get_song_resource
 from resources.genres import Genre, GenreList
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
@@ -235,18 +235,30 @@ def deactivate_account(username):
     return {'msg': "Account Deactivated!"}, 200
 
 """
+: This route is to request the password reset link when users forgot their password at login.
+"""
+@app.route('/forget-password', methods=['POST'])
+def forget_password():
+    try:
+        email = request.get_json()['email']
+        res = password_forget(email)
+        return res, 200
+    except:
+        return {'msg': "Key-Error 'email'"}, 400
+
+"""
 : Password Reset Link.
 : This route is the password reset link for users who forgot their passwords on Login Page
 : Users click 'Forgot Password?' link and the route link will be sent to their emails.
 """
 @app.route('/reset-password/<user_id>', methods=['GET', 'POST'])
 def reset_password(user_id):
-    if request.method == 'GET':
-        return render_template('reset_pwd.html')
+    user = UserModel.find_by_id(user_id)
+    if user and request.method == 'GET':
+        return render_template('reset_pwd.html', username = user.username)
     if request.form['reset'] == 'Reset':
         password = request.form['password']
-
-        return forget_password(user_id, password)
+        return password_reset(user_id, password)
 
 
 # Routes and Resources
