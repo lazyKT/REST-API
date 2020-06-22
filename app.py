@@ -242,7 +242,7 @@ def forget_password():
     try:
         email = request.get_json()['email']
         res = password_forget(email)
-        return res, 200
+        return res
     except:
         return {'msg': "Key-Error 'email'"}, 400
 

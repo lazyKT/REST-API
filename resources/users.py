@@ -181,10 +181,10 @@ def password_forget(email):
         try:
             print("request for password-reset")
             UserModel.send_pwd_reset_link(user.id, email)
-            return {'msg', "A password reset link has been sent to your email."}
+            return "A password reset link has been sent to your email.", 200
         except:
-            return {'msg': "Internal Server Error. Error Sending Email Address."}, 500
-    return {'msg': 'User related to this email has not been found!'}
+            return "Internal Server Error. Error Sending Email Address.", 500
+    return 'User related to this email has not been found!', 404
 
 
 """
