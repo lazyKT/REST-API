@@ -200,4 +200,5 @@ def password_reset(user_id, password):
         return {'msg': "Invalid User!!"}, 404
     new_password = Hash_Password(password).hash_pwd()
     UserModel.changePwd(user_id, new_password)
+    print(user.username)
     return render_template('pwd_changed.html', username = user.username)

@@ -20,7 +20,7 @@ from resources.genres import Genre, GenreList
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
 from lib.vdo_helper import convert_mp3, find_file
-from lib.link_token import confirm_token
+from lib.link_token import confirm_token, generate_link_token
 
 app = Flask(__name__)
 load_dotenv(".env", verbose=True) # Load the App Parameters and Const from .env
@@ -203,6 +203,7 @@ def get_status(task_id):
     except:
         return {'msg': "Error! Requested Resources Not Available!"}, 400
 
+
 """
 : This is a route for the user confirmation.
 : This route is sent to user's email address after succesful registeration.
@@ -226,8 +227,6 @@ def confirm_email(token):
         UserModel.activate_account(user.id)
         return render_template('activate.html')
 
-    
-
 
 """
 : This route is for the activation of the account for the deactivated users.
@@ -236,8 +235,12 @@ def confirm_email(token):
 @app.route('/re-activate', methods=['POST'])
 def activate_account():
     user = UserModel.find_by_email(request.get_json()['email'])
-    user.send_confirmation_email()
+    if not user:
+        return {'msg': "User account related to this email address, is not found."}, 404
+    token = generate_link_token(user.email)
+    UserModel.send_confirmation_email(token, user.email, user.username)
     return {'msg': "An Activation Link has been sent to your email Address."}, 200
+
 
 """
 : This is a route to deactivate the account.
@@ -248,6 +251,7 @@ def deactivate_account(username):
     user = UserModel.find_by_username(username)
     UserModel.deactivate_account(user.id)
     return {'msg': "Account Deactivated!"}, 200
+
 
 """
 : This route is to request the password reset link when users forgot their password at login.
@@ -260,6 +264,7 @@ def forget_password():
         return res
     except:
         return {'msg': "Key-Error 'email'"}, 400
+
 
 """
 : Password Reset Link.

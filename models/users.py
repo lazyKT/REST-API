@@ -138,6 +138,10 @@ class UserModel(db.Model):
         user = cls.find_by_id(_id)
         user.password = newPwd
         db.session.commit()
+        sender = os.environ.get('HOST_EMAIL')
+        subject = os.environ.get('PASSWORD_CHAGED_SUBJECT')
+        body = render_template('pwd_changed_email.html', username = user.username)
+        send(sender, user.email, subject, body)
 
 
 class Hash_Password:
