@@ -14,12 +14,13 @@ from sendgrid.helpers.mail import *
 
 
 def send(sender, recipient, subject, body):
+	print("Sending Email.....")
 	sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
 	from_email = Email(sender)
 	to_email = To(recipient)
 	subject = subject
-	content = Content("text/plain", body)
-	mail = Mail(from_email, to_email, subject, content)
+	# content = Content("text/plain", body)
+	mail = Mail(from_email, to_email, subject, html_content=HtmlContent(body))
 	response = sg.client.mail.send.post(request_body=mail.get())
 	print(response.status_code)
 	print(response.body)

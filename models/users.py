@@ -4,7 +4,7 @@ import hashlib
 import os
 import uuid
 from lib.email_helper import send
-from flask import url_for, request
+from flask import url_for, request, render_template
 
 # !!! This is a helper class to simplify the db operations
 """
@@ -66,13 +66,15 @@ class UserModel(db.Model):
     : User can only login after the account has been activated.
     : This function simply perform the email delivery to the destinated user's email address using SENDGRID Twilio API.
     """
-    def send_confirmation_email(self):
+    @classmethod
+    def send_confirmation_email(cls, token, email, username):
         print("Send Confirmation Email")
-        activate_url = request.url_root[:-1] + f'/activate/{self.id}'
+        activate_url = request.url_root[:-1] + f'/confirm/{token}'
         sender = os.environ.get('HOST_EMAIL')
         subject = os.environ.get('USER_CREATED_SUBJECT')
-        body = f"{os.environ.get('USER_CREATED_EMAIL')} Please click {activate_url} to activate your account."
-        send(sender, self.email, subject, body)
+        print("Before Body")
+        body = render_template('confirm_email.html', confirm_url = activate_url, username = username)
+        send(sender, email, subject, body)
     
     """
     : This is a helper function for the users.password_forget(email) function.

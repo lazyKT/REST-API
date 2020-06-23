@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from celery import Celery
 
 from flask_restful import Api
-from flask import Flask, render_template, jsonify, request, send_file
+from flask import Flask, render_template, jsonify, request, send_file, flash
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 # !!! Werkzeug import in flask_uploads has been updated
@@ -20,6 +20,7 @@ from resources.genres import Genre, GenreList
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
 from lib.vdo_helper import convert_mp3, find_file
+from lib.link_token import confirm_token
 
 app = Flask(__name__)
 load_dotenv(".env", verbose=True) # Load the App Parameters and Const from .env
@@ -212,6 +213,25 @@ def get_status(task_id):
 def confirm_user(user_id):
     UserModel.activate_account(user_id)
     return render_template('activate.html')
+
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    try:
+        email = confirm_token(token, expiration=90)
+    except:
+        return "The Confirmation Link has been invalid or expired."
+    if not email:
+        return "The Confirmation Link has been expired.\nIf you account has not confirmed yet, try to log in to get confirmation link"
+    user = UserModel.find_by_email(email)
+    if not user:
+        return "User Not Found"
+    if user.status == "Active":
+        return "Your account already confirmed and active."
+    else:
+        UserModel.activate_account(user.id)
+        return render_template('activate.html')
+
+    
 
 
 """
