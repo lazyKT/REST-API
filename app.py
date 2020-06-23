@@ -209,15 +209,10 @@ def get_status(task_id):
 : Users must click this route in their email inbox to activate their account.
 : InActive users cannot be validated and cannot access the app.
 """
-@app.route('/activate/<user_id>')
-def confirm_user(user_id):
-    UserModel.activate_account(user_id)
-    return render_template('activate.html')
-
 @app.route('/confirm/<token>')
 def confirm_email(token):
     try:
-        email = confirm_token(token, expiration=90)
+        email = confirm_token(token)
     except:
         return "The Confirmation Link has been invalid or expired."
     if not email:
@@ -271,14 +266,24 @@ def forget_password():
 : This route is the password reset link for users who forgot their passwords on Login Page
 : Users click 'Forgot Password?' link and the route link will be sent to their emails.
 """
-@app.route('/reset-password/<user_id>', methods=['GET', 'POST'])
-def reset_password(user_id):
-    user = UserModel.find_by_id(user_id)
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = confirm_token(token, expiration=600) # ! expired in 10 minutes
+    except:
+        return "The reset-password link is invalid or expired."
+    if not email:
+        return "The reset-password link is expired. Try to request new one."
+    user = UserModel.find_by_email(email)
     if user and request.method == 'GET':
         return render_template('reset_pwd.html', username = user.username)
     if request.form['reset'] == 'Reset':
-        password = request.form['password']
-        return password_reset(user_id, password)
+        if request.form['password'] == request.form['confirm_pwd']:
+            password = request.form['password']
+            return password_reset(user.id, password)
+        else: # If passwords doesn't match. Alert User
+            flash("Passwords don't match!")
+            return render_template('reset_pwd.html', username = user.username)
 
 
 # Routes and Resources

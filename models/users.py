@@ -81,12 +81,12 @@ class UserModel(db.Model):
     : This function actually sends the pwd-rest-link to given email address.
     """
     @classmethod
-    def send_pwd_reset_link(cls, user_id, email):
+    def send_pwd_reset_link(cls, token, username, email):
         print("Sending Password Reset Link")
-        link = request.url_root[:-1] + f'/reset-password/{user_id}'
+        link = request.url_root[:-1] + f'/reset-password/{token}'
         sender = os.environ.get('HOST_EMAIL')
         subject = os.environ.get('FORGET_PASSWORD_SUBJECT')
-        body = f"{os.environ.get('FORGET_PASSWORD_EMAIL')} Please click {link} to reset your password."
+        body = render_template('pwd_reset_email.html', username = username, reset_link = link)
         send(sender, email, subject, body)
 
     """

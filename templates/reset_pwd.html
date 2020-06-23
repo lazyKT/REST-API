@@ -61,6 +61,14 @@
                 color: darkblue;
                 font-weight: bold;
             }
+            .error {
+                display: block;
+                font-size: 15px;
+                color: crimson;
+                font-weight: bold;
+                margin: auto;
+                width: fit-content;
+            }
         </style>
     </head>
     <body>
@@ -69,11 +77,18 @@
             <h3>Reset Password</h3>
             <form method="POST">
                 <p>New Password</p>
-                <input class="input" type="password" name="password" value="{{ password }}" required>
+                <input id="pwd" class="input" type="password" name="password" value="{{ password }}" required>
                 <p>Confirm Password</p>
-                <input class="input" type="password" name="confirm_pwd" value="{{ confirm_pwd }}" required>
+                <input id="confirm_pwd" class="input" type="password" name="confirm_pwd" value="{{ confirm_pwd }}" required>
                 <input class="btn" type="submit" name="reset" value="Reset">
             </form>
         </div>
+        {% for message in get_flashed_messages() %}
+            <p class="error">{{ message }}</p>
+        {% endfor %}
     </body>
+    <script>
+        let pwd = document.getElementById('pwd');
+        let confirm_pwd = document.getElementById('confirm_pwd');
+    </script>
 </html>

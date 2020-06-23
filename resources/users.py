@@ -1,6 +1,6 @@
 import os
 from marshmallow import ValidationError
-from flask import request, url_for
+from flask import request, url_for, render_template
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -182,7 +182,8 @@ def password_forget(email):
     if user:
         try:
             print("request for password-reset")
-            UserModel.send_pwd_reset_link(user.id, email)
+            token = generate_link_token(email)
+            UserModel.send_pwd_reset_link(token, user.username, email)
             return "A password reset link has been sent to your email.", 200
         except:
             return "Internal Server Error. Error Sending Email Address.", 500
@@ -194,8 +195,9 @@ def password_forget(email):
 : This function helps the reset the password of the given user_id
 """
 def password_reset(user_id, password):
-    if not UserModel.find_by_id(user_id):
+    user = UserModel.find_by_id(user_id)
+    if not user:
         return {'msg': "Invalid User!!"}, 404
     new_password = Hash_Password(password).hash_pwd()
     UserModel.changePwd(user_id, new_password)
-    return {'msg': "Password has been Changed!"}, 200
+    return render_template('pwd_changed.html', username = user.username)
