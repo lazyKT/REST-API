@@ -27,6 +27,7 @@ class SongModel(db.Model):
     def __call__(self):
         return {
             'id': self.id,
+            'task_id': self.task_id,
             'title': self.title,
             # 'posted_by': UserModel.find_by_id(self.posted_by).username,
             'url': self.url,

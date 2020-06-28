@@ -58,7 +58,7 @@ class SongList(Resource):
 
     @classmethod
     def get(cls):
-        songs = [song.json() for song in SongModel.query.all()]
+        songs = [song() for song in SongModel.query.all()]
         return songs
 
     @classmethod

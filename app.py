@@ -198,7 +198,7 @@ def listen_song(song_id):
 @app.route('/mp3Convert/status/<task_id>')
 def get_status(task_id):
     try:
-        from resources.Song import check_task_status
+        from resources.songs import check_task_status
         return check_task_status(task_id)
     except:
         return {'msg': "Error! Requested Resources Not Available!"}, 400
