@@ -9,6 +9,7 @@ from schemas.songs import SongSchema
 from models.songs import SongModel
 from models.genre import GenreModel
 from __wrappers__ import is_admin
+from lib.vdo_helper import url_helper
 
 song_schema = SongSchema()
 
@@ -83,16 +84,19 @@ class SongList(Resource):
  : After the convertion process has been passed to redis worker, this function will be executed
  : Take the task id from redis worker and save the task_id along with the requests obj in DB
 """
-def add_song(req, task_id):
-    # : Check if the song with the same url already exists?
-    if SongModel.find_by_url(req['url']):
-        return {'msg' : "Song already exists. Please Search for the song instead of re-creating it."}, 200
+def add_song(req, task_id='existed_101'):
+
+    # : Validate url
+    url = url_helper(req['url'])
+    if url is None:
+        return {'msg': "Invalid URL. Please check again!"}, 400
+
     # Check genre_id in request, if exists, proceed to DB Operation
     genre = GenreModel.find_by_id(req['genre_id'])
     if genre:
         try:
             # Save song info into DB
-            new_song = SongModel(task_id, req['title'], req['posted_by'], req['genre_id'], req['url'])
+            new_song = SongModel(task_id, req['title'], req['posted_by'], req['genre_id'], url)
             new_song.save_to_db()
             return new_song(), 201
         except:

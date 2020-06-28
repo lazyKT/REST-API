@@ -12,6 +12,7 @@ from flask_uploads import configure_uploads, patch_request_class
 from db import db
 from marsh import marsh
 import models.genre as genre
+from models.songs import SongModel
 from models.users import UserModel
 from resources.users import (UserRegister, User, UserLogin,
                              TokenRefresh, UserLogout, UserList, ChangePassword, password_reset, password_forget)
@@ -19,7 +20,7 @@ from resources.songs import Song, SongList, add_song, get_song_resource
 from resources.genres import Genre, GenreList
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
-from lib.vdo_helper import convert_mp3, find_file
+from lib.vdo_helper import convert_mp3, find_file, url_helper
 from lib.link_token import confirm_token, generate_link_token
 
 app = Flask(__name__)
@@ -166,12 +167,21 @@ def process():
     if request.method == 'GET':
         return render_template('process.html')
     data = request.get_json()
-    url = data['url']
-    if "youtube.com" in url and "=" in url:
-        convertion = task.delay(data['url'])
-        result = add_song(data, convertion.id) # DB Operation
-        return result
-    return {'msg': "Invalid URL. Please check again!"}, 400
+    # url_helper function helps to validate the url and remove the playlist information from url
+    # : for example, if a user request a song from youtube playlist, only the song requested will be processed,
+    # : removing playlist id from url. This is being done because of Youtube-dl feature.
+    # : Youtube-dl converts all the songs from playlist if the url contain playlist id
+    url = url_helper(data['url'])
+    # : If url is invalid, url_helper function will return None. Then we give 'Invalid url response' to client side.
+    if url is None:
+        return {'msg': "Invalid URL. Please check again!"}, 400
+    # if url is already exists in Song DB, just save the song with user_id, instead of creating again
+    if SongModel.find_by_url(url):
+        new_song = add_song(data)
+        return new_song
+    convertion = task.delay(url)
+    result = add_song(data, convertion.id) # DB Operation
+    return result
 
 """
 : This route allows the client side to get the song to play.
