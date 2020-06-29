@@ -3,7 +3,7 @@ from celery import Celery
 
 from flask_restful import Api
 from flask import Flask, render_template, jsonify, request, send_file, flash
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, jwt_required
 from flask_cors import CORS
 # !!! Werkzeug import in flask_uploads has been updated
 # !!! import Secure_filename from werkzeug.utils and FileStorage from werkzeug.datastructures
@@ -22,6 +22,7 @@ from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
 from lib.vdo_helper import convert_mp3, find_file, url_helper
 from lib.link_token import confirm_token, generate_link_token
+from lib.utils import validate_requests
 
 app = Flask(__name__)
 load_dotenv(".env", verbose=True) # Load the App Parameters and Const from .env
@@ -148,8 +149,17 @@ def index():
     return render_template('index.html')
 
 @app.route('/about')
+@validate_requests
 def about():
     return render_template('about.html')
+
+# This route is for contact to site admin about help and bug report
+@app.route('/help', methods=['POST'])
+@validate_requests
+def help():
+    issue = request.get_json()['issue']
+    email = request.get_json()['email']
+    return issue
 
 """
 : This is helper route to convert the Youtube Video to MP3 with the help of Youtube_dl.
@@ -163,6 +173,8 @@ def about():
 : Ffmpeg must be installed. Learn more about ffmpeg @  https://www.ffmpeg.org/about.html
 """
 @app.route('/process', methods=['GET','POST'])
+@validate_requests
+@jwt_required
 def process():
     if request.method == 'GET':
         return render_template('process.html')
@@ -206,6 +218,8 @@ def listen_song(song_id):
 : 201: Successful Convertion. 200: Task On-Progress. 500: Failure
 """
 @app.route('/mp3Convert/status/<task_id>')
+@validate_requests
+@jwt_required
 def get_status(task_id):
     try:
         from resources.songs import check_task_status
@@ -221,6 +235,7 @@ def get_status(task_id):
 : InActive users cannot be validated and cannot access the app.
 """
 @app.route('/confirm/<token>')
+@validate_requests
 def confirm_email(token):
     try:
         email = confirm_token(token)
@@ -243,6 +258,7 @@ def confirm_email(token):
 : The deactivated users can refer to this route to re-activate their account with their email addresses.
 """
 @app.route('/re-activate', methods=['POST'])
+@validate_requests
 def activate_account():
     user = UserModel.find_by_email(request.get_json()['email'])
     if not user:
@@ -257,6 +273,8 @@ def activate_account():
 : Users can deactivate the account by sending this route.
 """
 @app.route('/deactivate/<username>')
+@validate_requests
+@jwt_required
 def deactivate_account(username):
     user = UserModel.find_by_username(username)
     UserModel.deactivate_account(user.id)
@@ -267,6 +285,7 @@ def deactivate_account(username):
 : This route is to request the password reset link when users forgot their password at login.
 """
 @app.route('/forget-password', methods=['POST'])
+@validate_requests
 def forget_password():
     try:
         email = request.get_json()['email']
@@ -282,6 +301,7 @@ def forget_password():
 : Users click 'Forgot Password?' link and the route link will be sent to their emails.
 """
 @app.route('/reset-password/<token>', methods=['GET', 'POST'])
+@validate_requests
 def reset_password(token):
     try:
         email = confirm_token(token, expiration=600) # ! expired in 10 minutes

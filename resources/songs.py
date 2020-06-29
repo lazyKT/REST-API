@@ -10,6 +10,7 @@ from models.songs import SongModel
 from models.genre import GenreModel
 from __wrappers__ import is_admin
 from lib.vdo_helper import url_helper
+from lib.utils import validate_requests, response_builder
 
 song_schema = SongSchema()
 
@@ -17,6 +18,7 @@ song_schema = SongSchema()
 class Song(Resource):
 
     @classmethod
+    @validate_requests
     @jwt_required
     def get(cls, _id_):
         song = SongModel.find_by_id(_id_)
@@ -25,6 +27,7 @@ class Song(Resource):
         return {'msg': 'Song Not Exists'}
 
     @classmethod
+    @validate_requests
     @jwt_required
     @is_admin
     def delete(cls, _id_):
@@ -39,6 +42,7 @@ class Song(Resource):
         return {'msg': "Song Not Exists!"}, 400
 
     @classmethod
+    @validate_requests
     @jwt_required
     @is_admin
     def put(cls, _id_):
@@ -58,11 +62,13 @@ class Song(Resource):
 class SongList(Resource):
 
     @classmethod
+    @validate_requests
     def get(cls):
         songs = [song() for song in SongModel.query.all()]
         return songs
 
     @classmethod
+    @validate_requests
     # @fresh_jwt_required  # !!! Token must be fresh in order to post a song
     def post(cls):
         try:
@@ -133,9 +139,9 @@ def check_task_status(task_id):
         print(task)
         if task:
             if task.status == "SUCCESS":
-                return {'msg': "Your song is ready to play!"}, 201
+                return response_builder(status_code=201, body='Your Song is Ready to Play')
             else:
-                return {'msg': "Error Processing Request!"}, 500
-        return {'msg': "On-Progress"}, 200
+                return response_builder(status_code=500, body='Internal Server Error')
+        return response_builder(status_code=200, body='On-Progress')
     except:
-        return {'msg': "Error! Requested Resource Not Available!"}, 400
+        return response_builder(status_code=400, body='Bad Request')

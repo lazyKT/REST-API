@@ -15,6 +15,7 @@ from models.users import UserModel, Hash_Password
 from schemas.user_schema import UserSchema
 from __wrappers__ import is_admin
 from lib.link_token import generate_link_token, confirm_token
+from lib.utils import validate_requests
 
 user_schema = UserSchema()
 
@@ -22,6 +23,7 @@ user_schema = UserSchema()
 class UserRegister(Resource):
 
     @classmethod
+    @validate_requests
     def post(cls):
         try:
             user = user_schema.load(request.get_json())
@@ -49,6 +51,7 @@ class UserRegister(Resource):
 class User(Resource):
 
     @classmethod
+    @validate_requests
     @jwt_required
     def get(cls, user_id):
         if get_jwt_identity() != user_id:
@@ -59,6 +62,7 @@ class User(Resource):
         return user_schema.dump(user), 200
 
     @classmethod
+    @validate_requests
     @jwt_required
     @is_admin
     def delete(cls, user_id):
@@ -92,6 +96,7 @@ class User(Resource):
 class UserLogin(Resource):
 
     @classmethod
+    @validate_requests
     def post(cls):
         data = user_schema.load(request.get_json())
         user = UserModel.find_by_username(data["username"])
@@ -121,6 +126,7 @@ class UserLogin(Resource):
 class TokenRefresh(Resource):
 
     @classmethod
+    @validate_requests
     @jwt_refresh_token_required
     def post(cls):
         data = user_schema.load(request.get_json())
@@ -135,6 +141,7 @@ class TokenRefresh(Resource):
 class ChangePassword(Resource):
 
     @classmethod
+    @validate_requests
     @jwt_required
     def put(cls, _id):
         data = user_schema.load(request.get_json())
@@ -156,6 +163,7 @@ class ChangePassword(Resource):
 
 class UserLogout(Resource):
     @classmethod
+    @validate_requests
     @jwt_required
     def post(cls):
         print("Logout----------------------")
@@ -167,6 +175,7 @@ class UserLogout(Resource):
 class UserList(Resource):
 
     @classmethod
+    @validate_requests
     @jwt_required
     @is_admin
     def get(cls):
