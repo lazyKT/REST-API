@@ -23,6 +23,7 @@ from lib.image_helper import IMAGE_SET
 from lib.vdo_helper import convert_mp3, find_file, url_helper
 from lib.link_token import confirm_token, generate_link_token
 from lib.utils import validate_requests
+from lib.email_helper import send_report
 
 app = Flask(__name__)
 load_dotenv(".env", verbose=True) # Load the App Parameters and Const from .env
@@ -157,9 +158,14 @@ def about():
 @app.route('/help', methods=['POST'])
 @validate_requests
 def help():
+    subject = request.get_json()['subject']
     issue = request.get_json()['issue']
     email = request.get_json()['email']
-    return issue
+    try:
+        send_report(email, subject, issue)
+        return "Success"
+    except:
+        return "Failed"
 
 """
 : This is helper route to convert the Youtube Video to MP3 with the help of Youtube_dl.

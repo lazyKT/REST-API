@@ -25,3 +25,18 @@ def send(sender, recipient, subject, body):
 	print(response.status_code)
 	print(response.body)
 	print(response.headers)
+
+# This is a helper function for '/help' route.
+# This function allows users to send email about app issues, bugs to the site admin or developer
+def send_report(email, title, issue):
+	try:
+		sender = email
+		recipient = os.environ.get('HOST_EMAIL')
+		subject = f'[MusiCloud]: {title}'
+		send(sender, recipient, subject, body=issue)
+	except:
+		raise Exception("Error Sending Email")
+
+# This is a helper function to receive an email from user about bugs reports, issues, questions
+def receive_report(sender, recipient, subject, body):
+	pass
