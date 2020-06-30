@@ -7,7 +7,6 @@ from flask import request, send_file
 from marshmallow import ValidationError
 from schemas.songs import SongSchema
 from models.songs import SongModel
-from models.genre import GenreModel
 from __wrappers__ import is_admin
 from lib.vdo_helper import url_helper
 from lib.utils import validate_requests, response_builder
@@ -73,12 +72,9 @@ class SongList(Resource):
     def post(cls):
         try:
             song_data = song_schema.load(request.get_json())
-            genre = GenreModel.find_by_id(song_data['genre_id'])
-            if genre:
-                new_song = SongModel(**song_data)
-                new_song.save_to_db()
-                return new_song(), 201
-            return {'msg': "Invalid Genre! Not Exists!"}, 400
+            new_song = SongModel(**song_data)
+            new_song.save_to_db()
+            return new_song(), 201
         except ValidationError as err:
             return err.messages, 400
         except:
@@ -97,18 +93,13 @@ def add_song(req, task_id='existed_101'):
     if url is None:
         return {'msg': "Invalid URL. Please check again!"}, 400
 
-    # Check genre_id in request, if exists, proceed to DB Operation
-    genre = GenreModel.find_by_id(req['genre_id'])
-    if genre:
-        try:
-            # Save song info into DB
-            new_song = SongModel(task_id, req['title'], req['posted_by'], req['genre_id'], url)
-            new_song.save_to_db()
-            return new_song(), 201
-        except:
-            return "Error on SongModel Instance", 500
-    return f"No Genre found related to {req['genre_id']}"
-
+    try:
+        # Save song info into DB
+        new_song = SongModel(task_id, req['title'], req['posted_by'], req['genre_id'], url)
+        new_song.save_to_db()
+        return new_song(), 201
+    except:
+        return "Error on SongModel Instance", 500
 
 """
 : This is a helper function for the route "/listen/<song_id>".

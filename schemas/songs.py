@@ -7,4 +7,3 @@ class SongSchema(Schema):
     title = fields.Str()
     posted_by = fields.Int()
     url = fields.Str()
-    genre_id = fields.Int()

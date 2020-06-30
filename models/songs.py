@@ -1,6 +1,5 @@
 from db import db
 from models.users import UserModel
-from models.genre import GenreModel
 
 
 # !!! This is a helper class to make the db operations simple and easy
@@ -13,8 +12,6 @@ class SongModel(db.Model):
     posted_by = db.Column(db.String(80)) # user id
     url = db.Column(db.String(80)) # url related to song: example: https://www.youtube.com/watch?v=hxwjT90i8Ys
 
-    genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))  # Genre ID as an Foreign Key For Songs
-    genre = db.relationship('GenreModel')  # !!! Join two tables, genres and songs
 
     def __init__(self, task_id, title, posted_by,genre_id, url):
         self.task_id = task_id
@@ -31,7 +28,6 @@ class SongModel(db.Model):
             'title': self.title,
             # 'posted_by': UserModel.find_by_id(self.posted_by).username,
             'url': self.url,
-            'genre': GenreModel.find_by_id(self.genre_id).name
         }
         
     @classmethod
