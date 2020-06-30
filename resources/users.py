@@ -30,11 +30,11 @@ class UserRegister(Resource):
         except ValidationError as err:
             return err.messages, 400
 
-        # if UserModel.find_by_username(user['username']):
-        #     return {"msg": "User Already Exists"}, 400
+        if UserModel.find_by_username(user['username']):
+            return {"msg": "User Already Exists"}, 400
 
-        # if UserModel.find_by_email(user['email']):
-        #     return {"msg": "This email already has a registered account."}, 400
+        if UserModel.find_by_email(user['email']):
+            return {"msg": "This email already has a registered account."}, 400
 
         new_user = UserModel(**request.get_json())
         try:
@@ -163,8 +163,8 @@ class ChangePassword(Resource):
 
 class UserLogout(Resource):
     @classmethod
-    @validate_requests
     @jwt_required
+    @validate_requests
     def post(cls):
         print("Logout----------------------")
         jti = get_raw_jwt()['jti']  # !!! jti = JWT ID
