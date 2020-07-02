@@ -149,7 +149,6 @@ def index():
     return render_template('index.html')
 
 @app.route('/about')
-@validate_requests
 def about():
     return render_template('about.html')
 
@@ -305,7 +304,6 @@ def forget_password():
 : Users click 'Forgot Password?' link and the route link will be sent to their emails.
 """
 @app.route('/reset-password/<token>', methods=['GET', 'POST'])
-@validate_requests
 def reset_password(token):
     try:
         email = confirm_token(token, expiration=600) # ! expired in 10 minutes

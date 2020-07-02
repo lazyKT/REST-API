@@ -4,10 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About API</title>
+    <style>
+        span {
+            color: chocolate;
+        }
+        strong {
+            color: crimson;
+        }
+        li {
+            width: fit-content;
+            margin: 10px;
+            font-family: monospace;
+        }
+    </style>
 </head>
 <body>
     <div>
-        ABOUT PAGE. Comming Soon.
-    </div>
+        <h3>About</h3>
+        
+        <ul>
+          <h4>Availble Routes</h4>
+          <li><span>/index</span> : Home Page</li>
+          <li><span>/about</span> : Docs Page</li>
+          <li>*<span>/register</span> : Register a new User</li>
+          <li>*<span>/login</span> : Login </li>
+          <li>*<span>/logout</span> : Logout</li>
+          <li><span>/confirm/token</span> : User Confirmation Link via Email</li>
+            <li>*<span>/deactivate/username</span> : Deactivate the account</li>
+          <li>*<span>/re-activate</span> : Re-activate the account</li>
+          <li><span>/forget-password</span> : Forget Password on Login</li>
+          <li><span>/reset-password/token</span> : Reset-Password link via Email</li>
+          <li>*<span>/user/user_id</span> : Get user details</li>
+          <li>*<span>/changepassword/user_id</span> : Change User Password via Setting Page</li>
+          <li>*<span>/upload/avatar</span> : Upload User Avatar</li>
+          <li>*<span>/avatar/user_id</span> : Fetch Avatar related to User ID</li>
+          <li>*<span>/process</span> : request Convertion to Mp3 file from video url</li>
+          <li>*<span>/mp3Convert/status/task_id</span> : Check the mp3 Convertion Status with convertion_task_id</li>
+          <li>*<span>/listen/song_id</span> : Listen or Play the mp3 file</li>
+        </ul>
+        
+        <pre>
+          Routes with * means <strong>API Key is required for request.</strong>
+        </pre>
+        
+      </div>
 </body>
 </html>
