@@ -40,6 +40,19 @@ class SongModel(db.Model):
     def find_by_url(cls, url):
         return cls.query.filter_by(url = url).first()
 
+    """
+    : This function search for the songs which is related to the user_id.
+    """
+    @classmethod
+    def find_by_user(cls, _id_):
+        return cls.query.filter_by(posted_by=_id_)
+
+    # This function prevents processing of the duplicate songs from the same user.
+    @classmethod
+    def check_duplication(cls, user_id, url):
+        return cls.query.filter_by(posted_by=user_id, url=url).first()
+
+
     # !!! the insert and update method is just to 
     # !!! insert (or) update the data into Song Model,
     # !!! so we don't need class method here

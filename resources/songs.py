@@ -3,13 +3,14 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_claims
 )
-from flask import request, send_file
+from flask import request, send_file, jsonify
 from marshmallow import ValidationError
 from schemas.songs import SongSchema
 from models.songs import SongModel
+from models.users import UserModel
 from __wrappers__ import is_admin
 from lib.vdo_helper import url_helper
-from lib.utils import validate_requests, response_builder
+from lib.utils import response_builder
 
 song_schema = SongSchema()
 
@@ -17,7 +18,6 @@ song_schema = SongSchema()
 class Song(Resource):
 
     @classmethod
-    @validate_requests
     @jwt_required
     def get(cls, _id_):
         song = SongModel.find_by_id(_id_)
@@ -26,7 +26,6 @@ class Song(Resource):
         return {'msg': 'Song Not Exists'}
 
     @classmethod
-    @validate_requests
     @jwt_required
     @is_admin
     def delete(cls, _id_):
@@ -41,7 +40,6 @@ class Song(Resource):
         return {'msg': "Song Not Exists!"}, 400
 
     @classmethod
-    @validate_requests
     @jwt_required
     @is_admin
     def put(cls, _id_):
@@ -61,13 +59,11 @@ class Song(Resource):
 class SongList(Resource):
 
     @classmethod
-    @validate_requests
     def get(cls):
         songs = [song() for song in SongModel.query.all()]
         return songs
 
     @classmethod
-    @validate_requests
     # @fresh_jwt_required  # !!! Token must be fresh in order to post a song
     def post(cls):
         try:
@@ -92,6 +88,9 @@ def add_song(req, task_id='existed_101'):
     url = url_helper(req['url'])
     if url is None:
         return {'msg': "Invalid URL. Please check again!"}, 400
+    
+    if SongModel.check_duplication(req['posted_by'], req['url']):
+        return response_builder(status_code=400, body="Song Exists")
 
     try:
         # Save song info into DB
@@ -136,3 +135,18 @@ def check_task_status(task_id):
         return response_builder(status_code=200, body='On-Progress')
     except:
         return response_builder(status_code=400, body='Bad Request')
+
+
+"""
+: This is a helper function for the route '/mysongs/<user_id>'.
+: This function return the list of songs related to user id after checking the user validity.
+"""
+def mysongs_list(user_id):
+    if not UserModel.find_by_id(user_id):
+        raise Exception('User Not found!!')
+    songs = [song() for song in SongModel.find_by_user(user_id)]
+    print(songs)
+    if not songs:
+        return response_builder(status_code=404, body="Empty!!")
+    print(type(songs))
+    return jsonify(songs)

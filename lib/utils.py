@@ -2,6 +2,7 @@ import os
 from flask import request
 from functools import wraps
 from flask_jwt_extended import get_jwt_claims
+from werkzeug.security import safe_str_cmp
 
 
 # Custom response builder for conversion of the song
@@ -19,7 +20,7 @@ def validate_requests(f: object) -> object:
         secret = os.environ.get('SECRET_KEY')
         try:
             provided_secret = request.headers.get('x-api-key')
-            if secret == provided_secret:
+            if safe_str_cmp(provided_secret, secret):
                 print(provided_secret+" equals")
                 return f(*args, **kwargs)
             return response_builder(body="Unauthorized Access! Permission Denied"), 401

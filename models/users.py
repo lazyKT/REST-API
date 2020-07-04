@@ -24,7 +24,7 @@ class UserModel(db.Model):
     user_id = db.Column(db.String)
     email = db.Column(db.String)
     username = db.Column(db.String)
-    password = db.Column(db.String)
+    password = db.Column(db.LargeBinary)
     role = db.Column(db.String)
     status = db.Column(db.String)
     createdOn = db.Column(db.String)
@@ -126,7 +126,7 @@ class UserModel(db.Model):
     def register(self):
         print(self.createdOn)
         print(type(self))
-        db.session.add(self)
+        db.session.add(self)    
         db.session.commit()
 
     def delete(self):
@@ -158,8 +158,10 @@ class Hash_Password:
 
     @classmethod
     def check_pwd(cls, pwd, store_pwd):
+        print(store_pwd)
+        print(str(store_pwd).encode('utf-8'))
         salt_from_storage = store_pwd[:32]
         key_from_storage = store_pwd[32:]
         key = hashlib.pbkdf2_hmac('sha256', pwd.encode('utf-8'), salt_from_storage, 1000)
-
+        #print(f'{salt_from_storage} {key_from_storage} {key}')
         return True if key == key_from_storage else False

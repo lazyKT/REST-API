@@ -15,7 +15,7 @@ from models.songs import SongModel
 from models.users import UserModel
 from resources.users import (UserRegister, User, UserLogin,
                              TokenRefresh, UserLogout, UserList, ChangePassword, password_reset, password_forget)
-from resources.songs import Song, SongList, add_song, get_song_resource
+from resources.songs import Song, SongList, add_song, get_song_resource, mysongs_list
 from resources.images import ImageUpload, Image, AvatarUpload, Avatar
 from lib.image_helper import IMAGE_SET
 from lib.vdo_helper import convert_mp3, find_file, url_helper
@@ -154,7 +154,6 @@ def about():
 
 # This route is for contact to site admin about help and bug report
 @app.route('/help', methods=['POST'])
-@validate_requests
 def help():
     subject = request.get_json()['subject']
     issue = request.get_json()['issue']
@@ -165,6 +164,7 @@ def help():
     except:
         return "Failed"
 
+
 """
 : This is helper route to convert the Youtube Video to MP3 with the help of Youtube_dl.
 : The process function takes the Request object from user and perform the convertion of video to mp3
@@ -173,11 +173,10 @@ def help():
 : This function will not wait the execution of CONVERTION process. 
 : The function will response back to user just after it has sent the CONVERTION task to redis worker
 : In order to perform an operation with this route, 
-: SSL Certificate must be installed and updated: $ pip install --upgrade Certi
+: SSL Certificate must be installed and updated: $ pip install --upgrade Certifi
 : Ffmpeg must be installed. Learn more about ffmpeg @  https://www.ffmpeg.org/about.html
 """
 @app.route('/process', methods=['GET','POST'])
-@validate_requests
 @jwt_required
 def process():
     if request.method == 'GET':
@@ -198,6 +197,22 @@ def process():
     convertion = task.delay(url)
     result = add_song(data, convertion.id) # DB Operation
     return result
+
+
+"""
+: This is a helper route that the client can request the list of songs that a user converted.
+: This route will receive the user id from requested url, then
+: it will response the list of songs that is related to user id.
+"""
+@app.route('/mysongs/<user_id>', methods=['GET'])
+def mysongs(user_id):
+    try:
+        return mysongs_list(user_id)
+    except Exception as e:
+        print(type(e))
+        return str(e), 404
+    
+
 
 """
 : This route allows the client side to get the song to play.
@@ -222,7 +237,6 @@ def listen_song(song_id):
 : 201: Successful Convertion. 200: Task On-Progress. 500: Failure
 """
 @app.route('/mp3Convert/status/<task_id>')
-@validate_requests
 @jwt_required
 def get_status(task_id):
     try:
@@ -261,7 +275,6 @@ def confirm_email(token):
 : The deactivated users can refer to this route to re-activate their account with their email addresses.
 """
 @app.route('/re-activate', methods=['POST'])
-@validate_requests
 def activate_account():
     user = UserModel.find_by_email(request.get_json()['email'])
     if not user:
@@ -276,7 +289,6 @@ def activate_account():
 : Users can deactivate the account by sending this route.
 """
 @app.route('/deactivate/<username>')
-@validate_requests
 @jwt_required
 def deactivate_account(username):
     user = UserModel.find_by_username(username)
@@ -288,7 +300,6 @@ def deactivate_account(username):
 : This route is to request the password reset link when users forgot their password at login.
 """
 @app.route('/forget-password', methods=['POST'])
-@validate_requests
 def forget_password():
     try:
         email = request.get_json()['email']
