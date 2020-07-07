@@ -3,7 +3,7 @@ from celery import Celery
 
 from flask_restful import Api
 from flask import Flask, render_template, jsonify, request, send_file, flash
-from flask_jwt_extended import JWTManager, jwt_required
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from flask_cors import CORS
 # !!! Werkzeug import in flask_uploads has been updated
 # !!! import Secure_filename from werkzeug.utils and FileStorage from werkzeug.datastructures
@@ -204,8 +204,10 @@ def process():
 : This route will receive the user id from requested url, then
 : it will response the list of songs that is related to user id.
 """
-@app.route('/mysongs/<user_id>', methods=['GET'])
-def mysongs(user_id):
+@app.route('/mysongs', methods=['GET'])
+@jwt_required
+def mysongs():
+    user_id = get_jwt_identity()
     try:
         return mysongs_list(user_id)
     except Exception as e:

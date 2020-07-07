@@ -158,8 +158,6 @@ class Hash_Password:
 
     @classmethod
     def check_pwd(cls, pwd, store_pwd):
-        print(store_pwd)
-        print(str(store_pwd).encode('utf-8'))
         salt_from_storage = store_pwd[:32]
         key_from_storage = store_pwd[32:]
         key = hashlib.pbkdf2_hmac('sha256', pwd.encode('utf-8'), salt_from_storage, 1000)

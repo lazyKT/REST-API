@@ -45,12 +45,13 @@ class SongModel(db.Model):
     """
     @classmethod
     def find_by_user(cls, _id_):
-        return cls.query.filter_by(posted_by=_id_)
+        # The 'posted_by' column is String type, so I need to convert _id_ to String
+        return cls.query.filter_by(posted_by=str(_id_))
 
     # This function prevents processing of the duplicate songs from the same user.
     @classmethod
     def check_duplication(cls, user_id, url):
-        return cls.query.filter_by(posted_by=user_id, url=url).first()
+        return cls.query.filter_by(posted_by=str(user_id), url=url).first()
 
 
     # !!! the insert and update method is just to 
