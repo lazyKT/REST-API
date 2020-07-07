@@ -145,8 +145,6 @@ def mysongs_list(user_id):
     if not UserModel.find_by_id(user_id):
         raise Exception('User Not found!!')
     songs = [song() for song in SongModel.find_by_user(user_id)]
-    print(songs)
     if not songs:
         return response_builder(status_code=404, body="Empty!!")
-    print(type(songs))
-    return jsonify(songs)
+    return response_builder(status_code=200, body=jsonify(songs))

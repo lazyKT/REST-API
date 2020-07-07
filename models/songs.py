@@ -26,7 +26,7 @@ class SongModel(db.Model):
             'id': self.id,
             'task_id': self.task_id,
             'title': self.title,
-            # 'posted_by': UserModel.find_by_id(self.posted_by).username,
+            'posted_by': UserModel.find_by_id(self.posted_by).id,
             'url': self.url,
         }
         
