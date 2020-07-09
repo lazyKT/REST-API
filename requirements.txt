@@ -2,3 +2,11 @@ Flask
 Flask-RESTful
 Flask-SQLAlchemy
 Flask-JWT-Extended
+marshmallow
+Flask-CORS
+Flask-Uploads
+Flask-marshmallow
+python-dotenv
+certifi
+youtube-dl
+marshmallow-sqlalchemy
