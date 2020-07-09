@@ -10,6 +10,7 @@ from resources.images import (Image,
                                 Avatar,
                                 AvatarUpload)
 
+# Routes from Flask Restful Resources
 def __init_users_routes__(api):
     api.add_resource(UserRegister, '/register')
     api.add_resource(User, '/user/<int:user_id>')

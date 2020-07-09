@@ -1,3 +1,6 @@
+"""
+: This is public accessible routes
+"""
 from flask import Blueprint, render_template, request
 
 from lib.email_helper import send_report

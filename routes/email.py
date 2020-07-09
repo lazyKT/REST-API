@@ -1,3 +1,7 @@
+"""
+: The all routes  below are associated with User's email address, like..
+: User Confirmation, Password reset, de/activate accounts
+"""
 from flask import Blueprint, render_template, request
 from flask_jwt_extended import jwt_required
 

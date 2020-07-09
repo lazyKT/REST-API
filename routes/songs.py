@@ -58,5 +58,6 @@ def mysongs():
 
 """ -- Routes of Songs using FlaskRestful -- """
 def __init_song_routes__(api):
+    # Routes from Song Restful Resources
     api.add_resource(Song, '/songs/<int:_id_>')
     api.add_resource(SongList, '/songs')

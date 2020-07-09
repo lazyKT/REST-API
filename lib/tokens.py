@@ -1,3 +1,6 @@
+"""
+: This is JWT initialization and implementation
+"""
 from flask import jsonify
 from flask_jwt_extended import JWTManager
 
