@@ -13,7 +13,7 @@ from db import db
 from marsh import marsh
 from routes.pub import pub
 from routes.email import mail
-from routes.songs import song
+from routes.songs import song, __init_song_routes__
 from routes.users import __init_users_routes__
 
 from models.songs import SongModel
@@ -81,6 +81,7 @@ def create_app():
     app.register_blueprint(song)
 
     __init_users_routes__(api)
+    __init_song_routes__(api)
 
 
     """
@@ -115,11 +116,6 @@ def create_app():
         convertion = task.delay(url)
         result = add_song(data, convertion.id) # DB Operation
         return result
-        
-    
-    # Routes and Resources
-    api.add_resource(Song, '/songs/<int:_id_>')
-    api.add_resource(SongList, '/songs')
     
 
     db.init_app(app)

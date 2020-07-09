@@ -1,7 +1,7 @@
 from flask import Blueprint, send_file
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
-from resources.songs import get_song_resource, mysongs_list
+from resources.songs import get_song_resource, mysongs_list, Song, SongList
 
 from lib.vdo_helper import find_file
 
@@ -55,3 +55,8 @@ def mysongs():
     except Exception as e:
         print(type(e))
         return str(e), 404
+
+""" -- Routes of Songs using FlaskRestful -- """
+def __init_song_routes__(api):
+    api.add_resource(Song, '/songs/<int:_id_>')
+    api.add_resource(SongList, '/songs')
