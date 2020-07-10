@@ -147,4 +147,5 @@ def mysongs_list(user_id):
     songs = [song() for song in SongModel.find_by_user(user_id)]
     if not songs:
         return response_builder(status_code=404, body="Empty!!")
-    return response_builder(status_code=200, body=jsonify(songs))
+    print(type(songs))
+    return response_builder(status_code=200, body=songs)
