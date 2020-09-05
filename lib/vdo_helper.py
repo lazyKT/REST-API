@@ -43,6 +43,7 @@ def convert_mp3(url):
 : Before returning anything, the function checks the existence of the audio file in targeted folder.
 """
 def find_file(file):
+    print(file)
     folder = "audios"
     target_folder = os.path.join("static", folder)
     mp3_path = os.path.join(target_folder, f"{file}.mp3")

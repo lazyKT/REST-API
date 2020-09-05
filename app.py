@@ -225,6 +225,7 @@ def mysongs():
 """
 @app.route('/listen/<song_id>')
 def listen_song(song_id):
+    # wrong at get_song_resource NEED TO FIXED BY TOMORROW
     file_name = get_song_resource(song_id)
     try:
         return send_file(find_file(file_name))
