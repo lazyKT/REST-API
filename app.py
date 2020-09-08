@@ -227,6 +227,7 @@ def mysongs():
 def listen_song(song_id):
     # wrong at get_song_resource NEED TO FIXED BY TOMORROW
     file_name = get_song_resource(song_id)
+    print("file_name{file_name}")
     try:
         return send_file(find_file(file_name))
     except:

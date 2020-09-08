@@ -5,6 +5,7 @@ uwsgi.ini
 genres.json
 .env
 static/images
+static/audios
 sendgrid.env
 sendgrid.env
 .env
