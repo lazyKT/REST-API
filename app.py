@@ -3,7 +3,7 @@ from celery import Celery
 
 from flask_restful import Api
 from flask import Flask, render_template, jsonify, request, send_file, flash
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_raw_jwt
 from flask_cors import CORS
 # !!! Werkzeug import in flask_uploads has been updated
 # !!! import Secure_filename from werkzeug.utils and FileStorage from werkzeug.datastructures
@@ -337,6 +337,19 @@ def reset_password(token):
             flash("Passwords don't match!")
             return render_template('reset_pwd.html', username = user.username)
 
+"""
+: This is a route for a logout from API
+: This route terminates the access to the API for the requests coming to it
+: by adding the access token into JWT Blacklist
+"""
+@app.route('/logout', methods=['POST'])
+@jwt_required
+def logout():
+    print("Logging Out ...")
+    jti = get_raw_jwt()['jti']
+    UserModel.BLACKLIST.add(jti)
+    return {'msg': 'Successfully Log Out'}, 200
+
 
 # Routes and Resources
 api.add_resource(Song, '/songs/<int:_id_>')
@@ -345,7 +358,7 @@ api.add_resource(UserRegister, '/register')
 api.add_resource(User, '/user/<int:user_id>')
 api.add_resource(UserLogin, '/login')
 api.add_resource(TokenRefresh, '/refresh')
-api.add_resource(UserLogout, '/logout')
+# api.add_resource(UserLogout, '/logout')
 api.add_resource(UserList, '/users')
 api.add_resource(ChangePassword, '/changepwd/<int:_id>')
 api.add_resource(ImageUpload, "/upload/image") # Upload Image

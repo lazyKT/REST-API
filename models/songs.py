@@ -53,6 +53,11 @@ class SongModel(db.Model):
     def check_duplication(cls, user_id, url):
         return cls.query.filter_by(posted_by=str(user_id), url=url).first()
 
+    # This function checks if the song with the same url exists in db
+    @classmethod
+    def find_by_song(cls, url):
+        return cls.query.filter_by(url=url).first()
+
 
     # !!! the insert and update method is just to 
     # !!! insert (or) update the data into Song Model,
