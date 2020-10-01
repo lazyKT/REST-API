@@ -36,7 +36,7 @@ def send(sender, recipient, subject, body):
 def send_report(email, title, issue):
 	try:
 		sender = email
-		recipient = os.environ.get('HOST_EMAIL')
+		recipient = "kyaw.thitlwin.me@gmail.com"
 		subject = f'[MusiCloud]: {title}'
 		body = render_template('help.html', issue=issue)
 		send(sender, recipient, subject, body)

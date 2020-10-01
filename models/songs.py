@@ -46,7 +46,7 @@ class SongModel(db.Model):
     @classmethod
     def find_by_user(cls, _id_):
         # The 'posted_by' column is String type, so I need to convert _id_ to String
-        return cls.query.filter_by(posted_by=str(_id_))
+        return cls.query.filter_by(posted_by=str(_id_)).order_by(cls.id.desc())
 
     # This function prevents processing of the duplicate songs from the same user.
     @classmethod
