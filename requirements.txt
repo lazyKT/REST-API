@@ -9,4 +9,5 @@ Flask-marshmallow
 python-dotenv
 certifi
 youtube-dl
+psycopg2
 marshmallow-sqlalchemy

@@ -1,15 +1,18 @@
 <html>
     <head>
-        <title>Song REST-API</title>
+        <title>MusiCloud API v-0.1.0</title>
     </head>
     <body>
         <div>
             <div>
+		<h3>MusiCloud API version 0.1.0</h3>
                 <a href="/about">ABOUT</a>
             </div>
             <br>
             <br>
-            <h3>Welcome To Song API</h3>
+	    	<p>
+			This is an API service for the MusiCloud Application. For the project details, please refer to <a href="/about">here.</a>
+		</p>
             <br/>
             <ul>
                 <h4>Tools Used : </h4>
@@ -18,7 +21,9 @@
                 <li>Flask-RESTful</li>
                 <li>Flask-SQLAlchemy</li>
                 <li>Flask-JWT-Extended</li>
-            </ul>
+		<li>Celery</li>
+         	<li>Gunicorn</li>
+	    </ul>
             <br>
             <br>
             <p>For more info, please check a 
@@ -26,13 +31,6 @@
             </p>
             <br>
             <br>
-            <h4> For Testing</h4>
-            <p>If you want to test the 
-                <a href="http://ec2-18-188-163-155.us-east-2.compute.amazonaws.com/songs">API</a>,
-                please use 
-                <a href="https://www.postman.com/downloads/">postman</a> 
-                to test the features. I am also trying to deploy an user-friendly site to test the API.
-            </p>
         </div>
     </body>
 </html>

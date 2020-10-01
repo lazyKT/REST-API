@@ -9,3 +9,5 @@ static/audios
 sendgrid.env
 sendgrid.env
 .env
+config.py
+
