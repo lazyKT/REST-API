@@ -151,8 +151,7 @@ def index():
 @app.route('/about', methods=['POST'])
 def about():
     print(request.headers)
-    return "request"
-    # return render_template('about.html')
+    return render_template('about.html')
 
 # This route is for contact to site admin about help and bug report
 @app.route('/help', methods=['POST'])
