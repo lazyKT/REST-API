@@ -126,7 +126,7 @@ def check_task_status(task_id):
     try:
         from models.task import get_status
         task = get_status(task_id)
-        print(task)
+        print("TASK", task)
         if task:
             if task.status == "SUCCESS":
                 return response_builder(status_code=201, body='Your Song is Ready to Play')

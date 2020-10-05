@@ -8,4 +8,10 @@ static/images
 static/audios
 sendgrid.env
 sendgrid.env
+<<<<<<< HEAD
 config.py
+=======
+.env
+config.py
+
+>>>>>>> 3a3c7014afcedfa63eadfa26a80a6bc4697c67fc

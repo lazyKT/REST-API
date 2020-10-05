@@ -5,11 +5,11 @@
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
-
+from config import CELERY_TASKMETA_URL
 
 Base = automap_base()
 # : Map to the existing db: data.db
-engine = create_engine('sqlite:///data.db')
+engine = create_engine(CELERY_TASKMETA_URL)
 # Reflect or get tables from data.db
 Base.prepare(engine, reflect=True)
 

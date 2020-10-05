@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from celery import Celery
+import os
 
 from flask_restful import Api
 from flask import Flask, render_template, jsonify, request, send_file, flash
@@ -29,8 +30,8 @@ app.config.from_object("default_config")
 app.config.from_envvar("APPLICATION_SETTINGS")
 
 # Celery Configuations
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'db+sqlite:///data.db'
+app.config['CELERY_BROKER_URL'] = os.environ.get('CELERY_BROKER_URL')
+app.config['CELERY_RESULT_BACKEND'] = os.environ.get('DATABASE_URL')
 # app.config['CELERY_RESULT_DBURI'] = 'sqlite:///data.db'
 app.config['CELERY_TRACK_STARTED'] = True
 app.config['CELERY_SEND_EVENTS'] = True
@@ -148,7 +149,7 @@ def task(url):
 def index():
     return render_template('index.html')
 
-@app.route('/about', methods=['POST'])
+@app.route('/about')
 def about():
     print(request.headers)
     return render_template('about.html')
@@ -215,6 +216,8 @@ def process():
     # : for example, if a user request a song from youtube playlist, only the song requested will be processed,
     # : removing playlist id from url. This is being done because of Youtube-dl feature.
     # : Youtube-dl converts all the songs from playlist if the url contain playlist id
+    if data is None:
+        return { 'msg': 'Empty Request' }, 400
     url = url_helper(data['url'])
     # : If url is invalid, url_helper function will return None. Then we give 'Invalid url response' to client side.
     if url is None:
@@ -400,4 +403,4 @@ marsh.init_app(app)
 
 # Main Program Here __main__
 if __name__ == '__main__':
-    app.run(port=8000)
+    app.run()
