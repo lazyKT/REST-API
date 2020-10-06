@@ -22,11 +22,11 @@ from lib.image_helper import IMAGE_SET
 from lib.vdo_helper import convert_mp3, find_file, url_helper
 from lib.link_token import confirm_token, generate_link_token
 from lib.utils import validate_requests
-from lib.email_helper import send_report
+from lib.email_helper import send_report, send
 
 app = Flask(__name__)
 load_dotenv(".env", verbose=True) # Load the App Parameters and Const from .env
-app.config.from_object("default_config") 
+app.config.from_object("default_config")    
 app.config.from_envvar("APPLICATION_SETTINGS")
 
 # Celery Configuations
@@ -170,6 +170,28 @@ def help():
    #     return "Success"
    # except:
    #     return "Failed"
+
+
+# This is a route for the users report and feedback
+@app.route('/report', methods=['POST'])
+def report():
+    print(request.get_json())
+    title = request.get_json()['title']
+    subject = request.get_json()['subject']
+    email = request.get_json()['email']
+    report_type = request.get_json()['type']
+    try:
+        print("before sending report")
+        # Forwarding issue to the admin's email address
+        send_report(email, title, subject, report_type)
+        # Reply an email to user that the admin has received the report
+        print("Replying email")
+        body = render_template('do_not_reply.html', issue= subject, report_type=report_type)
+        send(None, email, f"{title}: Do Not Reply", body)
+        return "Success", 200
+    except:
+        return "Failed", 500
+
 
 
 """

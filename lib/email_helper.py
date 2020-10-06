@@ -12,10 +12,14 @@ import sendgrid
 import os
 from flask import render_template
 from sendgrid.helpers.mail import *
+from config import HOST_EMAIL, FORWARD_EMAIL
 
 
 def send(sender, recipient, subject, body):
-	print("Sending Email.....")
+	# print("Sending Email.....")
+	if not sender:
+		sender = HOST_EMAIL
+
 	sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
 	from_email = Email(sender)
 	to_email = To(recipient)
@@ -25,6 +29,7 @@ def send(sender, recipient, subject, body):
 	try:
 		mail = Mail(from_email, to_email, subject, html_content=HtmlContent(body))
 		response = sg.client.mail.send.post(request_body=mail.get())
+		# print("email sent")
 		print(response.status_code)
 		print(response.body)
 		print(response.headers)
@@ -33,12 +38,13 @@ def send(sender, recipient, subject, body):
 
 # This is a helper function for '/help' route.
 # This function allows users to send email about app issues, bugs to the site admin or developer
-def send_report(email, title, issue):
+def send_report(email, title, issue, report_type):
+	# print("Sending report")
 	try:
-		sender = email
-		recipient = "kyaw.thitlwin.me@gmail.com"
+		sender = HOST_EMAIL
+		recipient = FORWARD_EMAIL
 		subject = f'[MusiCloud]: {title}'
-		body = render_template('help.html', issue=issue)
+		body = render_template('help.html', issue=issue, reported_by = email, report_type=report_type)
 		send(sender, recipient, subject, body)
 	except:
 		raise Exception("Error Sending Email")
