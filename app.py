@@ -185,9 +185,9 @@ def report():
         # Forwarding issue to the admin's email address
         send_report(email, title, subject, report_type)
         # Reply an email to user that the admin has received the report
-        print("Replying email")
+        # print("Replying email")
         body = render_template('do_not_reply.html', issue= subject, report_type=report_type)
-        send(None, email, f"{title}: Do Not Reply", body)
+        send(None, email, "[MusiCloud]: Do Not Reply", body)
         return "Success", 200
     except:
         return "Failed", 500
