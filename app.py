@@ -157,14 +157,19 @@ def about():
 # This route is for contact to site admin about help and bug report
 @app.route('/help', methods=['POST'])
 def help():
-    subject = request.get_json()['subject']
-    issue = request.get_json()['issue']
-    email = request.get_json()['email']
-    try:
-        send_report(email, subject, issue)
-        return "Success"
-    except:
-        return "Failed"
+    print('From', request.form['from'])
+    print('to', request.form['to'])
+    print('subject', request.form['subject'])
+    print('Body', request.form['text'])
+    return ''
+   # subject = request.get_json()['subject']
+   # issue = request.get_json()['issue']
+   # email = request.get_json()['email']
+   # try:
+   #     send_report(email, subject, issue)
+   #     return "Success"
+   # except:
+   #     return "Failed"
 
 
 """
