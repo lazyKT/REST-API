@@ -1,8 +1,8 @@
-Flask Backend for MusiCloud App.
+### Flask Backend for MusiCloud App.
 
-Current Stage: Dev
+Current Stage: Alpha
 
-Please use Pipenv, instead of venv, during Development.
+**Please use Pipenv, instead of venv, during Development.**
 
 Feel free to review and test.(:
 Thank You.
